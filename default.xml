@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<workspace>
+ <label name="Visual Lambda workspace"/>
+ <items>
+  <item pos="-7.059260,0.323356" text="MULT 3 2"/>
+  <item figure="(\a b c. a (b c)) (\d e. d (d (d e))) (\f g. f (f g))" pos="1.262857,0.440000"/>
+ </items>
+</workspace>

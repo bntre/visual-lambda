@@ -1,0 +1,59 @@
+
+
+# Combinators
+
+I = \x. x
+K = \x y. x
+S = \x y z. x z (y z)
+
+W = \x. x x
+Y = \f.(\x. f (x x)) (\x. f (x x))
+OO = (\x y. y (x x y))
+     (\x y. y (x x y))
+
+LOOP = W W
+
+
+# Logic
+
+T    = \x y. x
+F    = \x y. y
+NOT  = \p. p F T
+AND  = \p q. p q F
+OR   = \p q. p T q
+COND = \p x y. p x y
+
+
+# Pairs
+
+FST  = \p. p T
+SND  = \p. p F
+PAIR = \a b f. f a b
+,    = \a b f. f a b
+
+
+# Arithmetic
+
+ISZERO = \n. n (\x. F) T
+SUCC   = \n f x. f (n f x)
+PLUS   = \m n f x. n f (m f x)
++      = \m n f x. n f (m f x)
+MULT   = \m n f. m (n f)
+*      = \m n f. m (n f)
+POW    = \m n. n m
+PRED   = \n f x. n (\g h. h (g f)) (\u. x) I
+
+TETR   = \m n. n (\g. g m) I
+
+FACT   = Y (\f n. (ISZERO n) 1 (MULT (f (PRED n)) n))
+
+
+# Lists
+
+NIL  = \z. z
+CONS = \x y. , F (, x y)
+:    = \x y. , F (, x y)
+NULL = \z. z T
+HEAD = \z. FST (SND z)
+TAIL = \z. SND (SND z)
+
