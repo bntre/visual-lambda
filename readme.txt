@@ -1,82 +1,52 @@
+= Visual Lambda =
 
-Run:
+http://bntr.planet.ee/lambda/loop_.gif
 
-python manipulator.py
-
-
-
-
---------------------------------------------------------
-Interface
+Visual Lambda environment allows intuitive manipulation of [http://en.wikipedia.org/wiki/Lambda_calculus lambda calculus] expressions.
 
 
 
-Items
-    Input from console                  I
-        Examples:
-            >> \\x y. (\\x. x)
-            >> FACT 3                   (see library.txt)
-            >> "Label"
-    
-    Select, Drag                        Left mouse button
-    
-    With selected item
-        Delete                          D
-        Copy                            C
+== Screenshot ==
 
-    Add Free Variable                   V
-
-
-Zoom View                               Mouse Wheel
-Refresh View                            F5
-
-
-Reduce Selected                         Enter
-Nonstop reduction                       Ctrl+Enter
-
-
-Modes of reduction
-    Applicative/Normal                  Alt+A
-    Lazy/Pure                           Alt+L, Alt+P
-    Inside selection                    Alt+S
-    
-    Quick Mode                          Q
-        Pick for reduction
-
-
-Construction of terms
-    Expand selection                    Space
-    
-    Add Free Variable                   V
-    
-    With selected sub-term
-        Delete                          Delete
-        Insert Application before       Insert,      A
-        Insert Application after        Ctrl+Insert, Ctrl+A
-        Insert Lambda                   Alt+Insert,  L
-        Bind Variable/Lambda with 
-          selected Lambda/Variable      Right Mouse Button
-          
-    Applicate                           Drop Item onto another
-
-    Substitute for free variable 
-        with Item                       Drop Item onto free variable
-
-    
-
-History
-    Undo                                Ctrl+Z, Alt+Left, Backspace
-    Redo                                Ctrl+Y, Alt+Right           
-
-Workspace
-    Save                                Ctrl+S
-    Load                                Ctrl+O
-    
-
-
-Zoom                                    Wheel
+http://bntr.planet.ee/lambda/screenshot_1.gif
 
 
 
-Save screen to bmp                      F12
-Mode of export frames                   Alt+E
+== Notation ==
+
+ * [http://bntr.planet.ee/lambda/visual_lambda_bubble_notation.gif Basics]
+ * More detailed in this thesis [http://bntr.planet.ee/lambda/work/visual_lambda.pdf visual_lambda.pdf]
+
+
+== Examples ==
+
+ * [http://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif 'MULT 3 2' evaluation]
+ * [http://bntr.planet.ee/lambda/lambda_F_anim.gif '((λgm.m(gg))(λgm.m(gg)))M' building and evaluation]
+ * [http://bntr.planet.ee/lambda/Y_I.gif 'Y I' evaluation]
+
+
+
+== Dependence ==
+
+ * [http://www.python.org/download/ python 2.5+]
+ * [http://www.pygame.org/download.shtml pygame 1.8+]
+
+
+
+== Run ==
+
+ {{{python manipulator.py}}}
+
+
+
+== Interface ==
+
+ * [http://code.google.com/p/visual-lambda/source/browse/trunk/readme.txt readme.txt]
+
+
+== Related works ==
+
+ * [http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html Programming with Visual Expressions, Wayne Citrin]
+ * [http://dkeenan.com/Lambda/ A Graphical Notation for the Lambda Calculus, Dave Keenan]   
+ * [http://thyer.name/lambda-animator/ Lambda Animator, Mike Thyer]   
+ * [http://worrydream.com/AlligatorEggs/ Alligator Eggs, Bret Victor]
