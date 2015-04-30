@@ -38,7 +38,6 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
  {{{python manipulator.py}}}
 
 
-
 == Interface ==
 
  * [http://code.google.com/p/visual-lambda/source/browse/trunk/readme.txt readme.txt]
@@ -46,7 +45,7 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
 
 == Related works ==
 
- * [http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html Programming with Visual Expressions, Wayne Citrin]
- * [http://dkeenan.com/Lambda/ A Graphical Notation for the Lambda Calculus, Dave Keenan]   
- * (Lambda Animator, Mike Thyer)[http://thyer.name/lambda-animator/]
- * (Alligator Eggs, Bret Victor)[http://worrydream.com/AlligatorEggs/]
+ * [Programming with Visual Expressions, Wayne Citrin](http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)
+ * [A Graphical Notation for the Lambda Calculus, Dave Keenan](http://dkeenan.com/Lambda/)
+ * [Lambda Animator, Mike Thyer](http://thyer.name/lambda-animator/)
+ * [Alligator Eggs, Bret Victor](http://worrydream.com/AlligatorEggs/)
