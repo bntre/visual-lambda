@@ -55,4 +55,3 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
  * [http://dkeenan.com/Lambda/ A Graphical Notation for the Lambda Calculus, Dave Keenan]   
  * [http://thyer.name/lambda-animator/ Lambda Animator, Mike Thyer]   
  * [http://worrydream.com/AlligatorEggs/ Alligator Eggs, Bret Victor]
-
