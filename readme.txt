@@ -1,4 +1,9 @@
-# = Visual Lambda = #
+# Visual Lambda #
+
+Project moved from [here](https://code.google.com/p/visual-lambda)
+
+
+
 
 http://bntr.planet.ee/lambda/loop_.gif
 
@@ -38,6 +43,7 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
  {{{python manipulator.py}}}
 
 
+
 == Interface ==
 
  * [http://code.google.com/p/visual-lambda/source/browse/trunk/readme.txt readme.txt]
@@ -45,7 +51,8 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
 
 == Related works ==
 
- * [Programming with Visual Expressions, Wayne Citrin](http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)
- * [A Graphical Notation for the Lambda Calculus, Dave Keenan](http://dkeenan.com/Lambda/)
- * [Lambda Animator, Mike Thyer](http://thyer.name/lambda-animator/)
- * [Alligator Eggs, Bret Victor](http://worrydream.com/AlligatorEggs/)
+ * [http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html Programming with Visual Expressions, Wayne Citrin]
+ * [http://dkeenan.com/Lambda/ A Graphical Notation for the Lambda Calculus, Dave Keenan]   
+ * [http://thyer.name/lambda-animator/ Lambda Animator, Mike Thyer]   
+ * [http://worrydream.com/AlligatorEggs/ Alligator Eggs, Bret Victor]
+
