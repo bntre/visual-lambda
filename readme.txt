@@ -1,9 +1,6 @@
-# Visual Lambda #
+Project moved from https://code.google.com/p/visual-lambda
 
-Project moved from [here](https://code.google.com/p/visual-lambda)
-
-
-
+= Visual Lambda =
 
 http://bntr.planet.ee/lambda/loop_.gif
 
