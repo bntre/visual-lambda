@@ -1,4 +1,4 @@
-= Visual Lambda =
+# = Visual Lambda = #
 
 http://bntr.planet.ee/lambda/loop_.gif
 
@@ -48,5 +48,5 @@ http://bntr.planet.ee/lambda/screenshot_1.gif
 
  * [http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html Programming with Visual Expressions, Wayne Citrin]
  * [http://dkeenan.com/Lambda/ A Graphical Notation for the Lambda Calculus, Dave Keenan]   
- * [http://thyer.name/lambda-animator/ Lambda Animator, Mike Thyer]   
- * [http://worrydream.com/AlligatorEggs/ Alligator Eggs, Bret Victor]
+ * (Lambda Animator, Mike Thyer)[http://thyer.name/lambda-animator/]
+ * (Alligator Eggs, Bret Victor)[http://worrydream.com/AlligatorEggs/]
