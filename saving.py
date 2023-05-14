@@ -33,7 +33,7 @@ def save( manipulator, filename ):
         
         if isinstance( i, Figure ):
             refnames.reset()
-            item.setAttribute( 'figure', `i.expression.expr` )
+            item.setAttribute( 'figure', repr(i.expression.expr) )
         
         elif isinstance( i, TextItem ):
             item.setAttribute( 'text', i.text )
@@ -46,7 +46,7 @@ def save( manipulator, filename ):
         f.close()
         debug('save', 'saved to', filename )
     except:
-        print "Error. Can't write to", filename
+        print("Error. Can't write to", filename)
 
     
 
@@ -56,7 +56,7 @@ def load( manipulator, filename ):
     try:
         dom = minidom.parse( filename )
     except IOError:
-        print "Error. Can't read", filename
+        print("Error. Can't read", filename)
         return False
 
     manipulator.items = []
@@ -64,12 +64,12 @@ def load( manipulator, filename ):
         
         i = None
         if item.hasAttribute('figure'):
-            i = Figure( item.getAttribute('figure').encode() )
+            i = Figure( item.getAttribute('figure') )
         elif item.hasAttribute('text'):
-            i = TextItem( item.getAttribute('text').encode() )
+            i = TextItem( item.getAttribute('text') )
 
-        pos = item.getAttribute('pos').encode().split(',')
-        pos = map( float, pos )
+        pos = item.getAttribute('pos').split(',')
+        pos = tuple(map( float, pos ))
         i.position.setTranspose( pos[0],pos[1], 1 )
         i.refreshTransform()
         manipulator.items.append( i )

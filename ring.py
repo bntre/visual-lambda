@@ -22,7 +22,7 @@ class Ring:
         self.r   = r
         
     def __repr__( self ):
-        return 'Ring( ' + `self.pos, self.r` + ' )'
+        return 'Ring(%s, %s)' % (repr(self.pos), repr(self.r))
     
     
     def copy( self ):

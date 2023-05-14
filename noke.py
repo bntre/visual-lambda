@@ -94,7 +94,7 @@ class Noke:
         try:
             node = getattr( self.node, attr )
         except AttributeError:
-            raise KeyError
+            raise KeyError()
             
         if VAR == self.node.type and LET == node.type:      # Gone from VAR to LET
             key = addkey( self.node, self.key )
@@ -111,10 +111,10 @@ class Noke:
         if not target:  # target is 0 or None: Free Variable or Constant
             return Noke( target )
 
-        #print 'jump to ref', self, target
+        #print('jump to ref', self, target)
         while target != self.node:
             self = self.stepUp()
-            #print 'jump', self
+            #print('jump', self)
         return self
 
 
@@ -298,7 +298,8 @@ class Noke:
     def copyBubble( self, noke ):
         "Copy Bubble from one Noke to another"
         
-        if self.node != noke.node:  raise "can't copy Bubble"
+        if self.node != noke.node:
+            raise Exception("can't copy Bubble")
         
         bubble = noke()
         if bubble:

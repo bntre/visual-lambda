@@ -36,7 +36,7 @@ class Library:
             return self.number( int( key ) )
 
         else:
-            raise KeyError, key
+            raise KeyError(key)
 
         
     def __iter__( self ):
@@ -61,7 +61,7 @@ class Library:
                     if next: line += ' ' + next
                 
                 if line and not '#'==line[0]:
-                    yield map( strip, line.split('=',1) )
+                    yield list(map( strip, line.split('=',1) ))
             
         
 
@@ -70,7 +70,7 @@ class Library:
         try:
             f = open( txt )
         except IOError:
-            print "Warning: no library found", txt
+            print("Warning: no library found", txt)
         else:
             lines = f.readlines()
             f.close()

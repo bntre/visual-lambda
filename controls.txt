@@ -7,7 +7,7 @@ python manipulator.py
 
 
 --------------------------------------------------------
-Interface
+Controls
 
 
 

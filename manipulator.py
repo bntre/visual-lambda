@@ -61,7 +61,7 @@ class Selection:
              return 1
 
     def __repr__( self ):
-        return '%s %s' % (`self.item`,`self.noke`)
+        return '%s %s' % (repr(self.item), repr(self.noke))
 
     def figure( self ):
         return self.item and isinstance( self.item, Figure ) and self.item
@@ -144,7 +144,7 @@ class Manipulator( Window ):
         filename = config.get( 'workspace', 'default.xml' )
         if filename:
             if not saving.load( self, filename ):
-                print "Can't open default workspace"
+                print("Can't open default workspace")
         
 
         
@@ -298,7 +298,7 @@ class Manipulator( Window ):
     def drawText( self, surface, text, matrix ):
        
         vector = matrix * Vector((0,0,1,1))
-        x,y,s,_ = map( toInt, vector )
+        x,y,s,_ = tuple(map( toInt, vector ))
        
         self.text( text, (x,y) )
     
@@ -319,7 +319,7 @@ class Manipulator( Window ):
             debug( 1, "Error: circle radius < 1" )
             return
 
-        pos = map( toInt, pos )
+        pos = tuple(map( toInt, pos ))
 
         col = self.getColor( col )
         
@@ -355,7 +355,7 @@ class Manipulator( Window ):
         isVar =  let.VAR == drawn.noke.node.type            # expr is VAR, ABS or LET
         
         abs = None      # Get Abstraction Node for fill color
-        #print 'get abs', drawn.__dict__
+        #print('get abs', drawn.__dict__)
         if drawn.fade:
             abs = drawn.noke().fading.act.abs
         elif isVar:            
@@ -363,7 +363,7 @@ class Manipulator( Window ):
         elif let.ABS == drawn.noke.node.type:
             abs = drawn.noke.node
         else:
-            raise "can't get abs"
+            raise Exception("can't get abs")
            
         debug('draw', '- draw Noke', drawn.noke, isVar, abs )
         
@@ -571,9 +571,9 @@ class Manipulator( Window ):
         self.flip()
 
 
-    def input( self, event ):
+    def handleEvent( self, event ):
 
-        #print 'input event', event
+        #print('handleEvent', event)
 
         if event.type in ( MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION ):
             
@@ -629,23 +629,24 @@ class Manipulator( Window ):
                 # Dropping
                 if self.dragPos and self.selection.figure() and self.highlight:
                     debug(2,'dropped',self.selection.item.expression,'-->',self.highlight.noke)
-                    dragged = self.selection.item
-                    construct.applicate( dragged.expression.expr, 
-                                         self.highlight.noke.node )
-                    
-                    self.items.remove( dragged )
-                    
-                    new = self.highlight.item
+                    if self.highlight.noke: #!!! added for python3
+                        dragged = self.selection.item
+                        construct.applicate( dragged.expression.expr, 
+                                             self.highlight.noke.node )
+                        
+                        self.items.remove( dragged )
+                        
+                        new = self.highlight.item
 
-                    new.history.step( new.expression.copy() )
+                        new.history.step( new.expression.copy() )
 
-                    new.detColorSpace()
-                    new.clean()
-                    new.buildGroups()
-                    new.buildGeometry()
-                    self.selection = Selection( new )
-                    self.highlight = None
-                    self.invalidate()
+                        new.detColorSpace()
+                        new.clean()
+                        new.buildGroups()
+                        new.buildGeometry()
+                        self.selection = Selection( new )
+                        self.highlight = None
+                        self.invalidate()
                     
                 
                 self.dragPos = None
@@ -671,7 +672,7 @@ class Manipulator( Window ):
                     if item != toolbar.ToolbarItem.highlighted:
                         toolbar.ToolbarItem.highlighted = item
                         if self.showInfo and item and item.tip:
-                            print 'tip:', item.tip
+                            print('tip:', item.tip)
                         redraw = True
 
                 if redraw:
@@ -689,7 +690,7 @@ class Manipulator( Window ):
                 
                 elif type( proc ) is dict:
                     mods = pygame.key.get_mods()
-                    for key in proc.iterkeys():
+                    for key in proc.keys():
                         if not key  or mods & key:
                             proc[ key ]()
                             break
@@ -715,12 +716,12 @@ class Manipulator( Window ):
                     self.addEvent( e )
 
             else:
-                #print 'got USEREVENT', event
+                #print('got USEREVENT', event)
                 pass
 
 
 
-        Window.input( self, event )
+        Window.handleEvent( self, event )
 
 
     #---------------------------------------------
@@ -892,9 +893,9 @@ class Manipulator( Window ):
     def eventViewHelp( self ):
         self.showInfo ^= True
         if self.showInfo:
-            print 'Show Tips'
+            print('Show Tips')
         else:
-            print "Don't show Tips"
+            print("Don't show Tips")
         #self.invalidate()
 
     def eventModeStrategy( self ):
@@ -1018,17 +1019,17 @@ class Manipulator( Window ):
                     else:
                         pick.noke = withAppls[ -1 ]
 
-                print
+                print()
                 node = pick.noke.node               # Selection
                 expr = pick.item.expression.expr    # Whole Figure
                 if expr != node:
-                    print 'figure:', expr
-                print 'selection:', node
+                    print('figure:', expr)
+                print('selection:', node)
 
 
             elif isinstance( item, TextItem ):
-                print
-                print 'text:', pick.item.text
+                print()
+                print('text:', pick.item.text)
                 
 
             self.selection = pick        # {figure,noke}
@@ -1072,10 +1073,10 @@ class Manipulator( Window ):
             sel = self.selection.noke
             
             if sel.derefable() and not sel.isRedexAppl():
-                #print 'derefable', sel
+                #print('derefable', sel)
                 while sel.key:                  # Go outside from Be-Expressions
                     sel = sel.up()
-                #print 'after up. derefable?', sel
+                #print('after up. derefable?', sel)
                 reduced = first( sel.node.deref() )
             
             else:
@@ -1133,8 +1134,8 @@ class Manipulator( Window ):
             debug('eat', reduced.result )
         
         #debug('eat', 'after arrange:', figure.expression )
-        print
-        print 'reduced:', figure.expression.expr
+        print()
+        print('reduced:', figure.expression.expr)
 
         # Rebuild Figure
         figure.clean()

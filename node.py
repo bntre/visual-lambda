@@ -44,7 +44,7 @@ class Node:
             return self.childs[ name ]
 
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
 
 
@@ -54,7 +54,7 @@ class Node:
         debug( 4, 'subst: %s -to- %s' % (self, node) )
         debug( 4, 'parent.childs: %s' % self.parent.childs )
         
-        for k,child in self.parent.childs.iteritems():
+        for k,child in self.parent.childs.items():
             if self == child:                   # Find Link to this Node
                 self.parent.childs[ k ] = node
                 node.parent = self.parent       # Backlink from linked Child too
@@ -62,13 +62,13 @@ class Node:
                 return
 
         debug( 4, 'no child %s; only %s' % (self, self.parent.childs) )
-        raise KeyError
+        raise KeyError()
 
 
     def allNodes( self ):
         "Iterates all Nodes of Branch"
         yield self
-        for child in self.childs.itervalues():
+        for child in self.childs.values():
             for node in child.allNodes():
                 yield node
 

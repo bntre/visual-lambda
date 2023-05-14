@@ -30,9 +30,7 @@ def debug( *args ):
 
         
     def output( args ):
-        for a in args:
-            print a,
-        print
+        print(" ".join(str(a) for a in args))
 
 
     if 1 == len( args ):

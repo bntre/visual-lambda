@@ -3,7 +3,7 @@
 # Representation of References as Chars
 
 
-chars = map(chr,range(97,123))   # Chars
+chars = list(map(chr, range(97,123)))   # Chars
 count = len(chars)
 
 vars = []

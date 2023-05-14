@@ -49,7 +49,7 @@ class Enduring:      # ?? move class to another module
         self.funcs = [  { 'name':name, \
                           'func':func, \
                           'prevval':func(0) }  \
-                              for name,func in funcs.iteritems()  ]
+                              for name,func in funcs.items()  ]
         
         # Create pygame event   
         self.event = pygame.event.Event( ENDURINGEVENT, {'data':self} )

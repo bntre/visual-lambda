@@ -84,7 +84,7 @@ class Bubble:
         "Returns previous or next neighbor (or parent if not); n = -1 or 1"
         if self.parent:
             nokes = self.parent().childs + [self.parent]
-            bubbles = map( Noke.get, nokes )
+            bubbles = list(map( Noke.get, nokes ))
             return nokes[ bubbles.index( self ) + n ]
 
     def neighbors( self ):
@@ -493,7 +493,7 @@ class Figure( FieldItem ):
         "Det Configuration iteratively"
 
         nokes = list( group.bubbles() )
-        bubbles = map( Noke.get, nokes )
+        bubbles = list(map( Noke.get, nokes ))
 
         debug('build','buildGroupGeometry. nokes:',nokes)
         
@@ -503,7 +503,7 @@ class Figure( FieldItem ):
         
         
         # Iteratively det Radiuses (and angles) of Bubbles
-        for retries in xrange( 50,0,-1 ):
+        for retries in range( 50,0,-1 ):
         
             # Reset
             Bubble.arcs.reset()     # Reset Arcs Cache
@@ -512,7 +512,8 @@ class Figure( FieldItem ):
                 b.corr  = 0
                 
             # Det Tights
-            map( Bubble.detTights, bubbles )
+            for b in bubbles:
+                Bubble.detTights(b)
                 
             # Det Corrections
             if not any( map( Bubble.detCorrections, bubbles ) ):
@@ -522,12 +523,14 @@ class Figure( FieldItem ):
             debug( 'build', "retries", retries )
             
             # Correct Radiuses of Bubbles
-            map( Bubble.correct, bubbles )
+            for b in bubbles:
+                Bubble.correct(b)
             
 
         # Det positions of Bubbles
         Bubble.dirs.reset()         # Reset Dirs Cache
-        map( Bubble.detPosition, bubbles )
+        for b in bubbles:
+            Bubble.detPosition(b)
 
         # Expand Radiuses for overlapping
         for b in bubbles:

@@ -42,7 +42,7 @@ class Cover( Enduring ):
         for eating in self.act.eatings:
 
             # Get Eaten bubbles
-            eaten = map( Noke.get, eating.eaten )
+            eaten = list(map( Noke.get, eating.eaten ))
         
             # Det Bounding ring of Eaten Bubbles for Eating Bubble morphing
             eatenBounding = Group.getBounding( eaten )
@@ -58,8 +58,8 @@ class Cover( Enduring ):
             # Det Bounding ring of Group excluding Eaten Bubbles
             #  for Group Bounding Ring morphing
             nokes = list( eating.group.bubbles() )
-            bubbles = map( Noke.get, nokes )
-            map( bubbles.remove, eaten )
+            bubbles = list(map( Noke.get, nokes ))
+            list(map( bubbles.remove, eaten ))
             
             newBounding = Group.getBounding( bubbles )
             
@@ -406,7 +406,7 @@ class Release( Enduring ):
         
             
         # Morph Bounding Rings of modified Groups
-        for loaded,group in modifiedGroups.iteritems():
+        for loaded,group in modifiedGroups.items():
             
             debug('eat','group for morph', loaded.rootnoke, loaded.boundingRing )
             
@@ -495,7 +495,7 @@ class Act:
         # Create Eatings
         #  many if abs is inside some let-be expression
         self.eatings = []
-        for key in abs.fission.iterkeys():
+        for key in abs.fission.keys():
             noke = Noke( abs, key )
             self.eatings.append( Eating( noke ) )
 

@@ -1,7 +1,7 @@
 
 
 import sys, os
-import ConfigParser
+import configparser
 
 
 cfgFileName = 'config.cfg'
@@ -12,14 +12,14 @@ cfg = None
 
 def readCfg():
 
-    global cfg, cfgName
+    global cfg
 
     scriptpath = sys.argv[0]
 
     # Get full path of Read config.cfg
     path = os.path.join( os.path.dirname( scriptpath ), cfgFileName )
     
-    parser = ConfigParser.ConfigParser()
+    parser = configparser.ConfigParser()
     try:
         f = open( path )
     except IOError:

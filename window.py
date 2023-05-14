@@ -39,7 +39,7 @@ class Window:
         
         
     def __del__( self ):
-        #print "quit", self
+        #print("quit", self)
         pygame.quit()
 
 
@@ -48,7 +48,7 @@ class Window:
     def run( self ):
         while True:
             for event in pygame.event.get():
-                self.input( event )
+                self.handleEvent( event )
                 if pygame.QUIT == event.type:
                     return
 
@@ -80,7 +80,7 @@ class Window:
 
     def circle( self, pos, r, col=None, width=1 ):
         if r < 1:
-            print "Error: circle radius < 1"
+            print("Error: circle radius < 1")
             return            
         col = self.getColor( col )
         pygame.draw.circle( self.getSurface(), col, pos, r, width )
@@ -91,7 +91,7 @@ class Window:
 
     def polygon( self, ps, col=None ):
         if len(ps) < 2:
-            print "Error: polygon points < 2"
+            print("Error: polygon points < 2")
             return
         col = self.getColor( col )
         pygame.draw.polygon( self.getSurface(), col, ps )
@@ -118,7 +118,7 @@ class Window:
         pygame.mouse.set_cursor( *cursor )
 
 
-    def input( self, event ):
+    def handleEvent( self, event ):
         "Process standart events"
         if pygame.VIDEORESIZE == event.type:
             self.size = event.size
@@ -137,12 +137,12 @@ class Window:
         pygame.event.set_blocked( block )
         pygame.display.set_caption( 'Console Mode' )
 
-        input = raw_input( text )
+        inputGot = input( text )
 
         pygame.display.set_caption( self.caption )
         pygame.event.set_allowed( block )
         
-        return input
+        return inputGot
 
         
 

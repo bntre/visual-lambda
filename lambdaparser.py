@@ -35,10 +35,10 @@ class Parser:
     
     def parse( self, str ):
 
-        #print list( self.tokenize( str ) )
+        #print(list( self.tokenize( str ) ))
         tokens = self.tokenize( str )
         struct = self.getStruct( tokens )
-        #print struct
+        #print(struct)
 
         return self.getExpression( struct, {} )
 
@@ -46,7 +46,7 @@ class Parser:
     def getExpression( self, struct, vars, func=None ):
         
         if not struct:
-            print "Error: Empty Expression: ()"
+            print("Error: Empty Expression: ()")
             return Variable()
         
         head, tail = struct[0], struct[1:]
@@ -65,7 +65,7 @@ class Parser:
                 vars1[ varname ] = abs      # And Append/Replace the varname
     
                 if not tail:
-                    print "Error: Lambda %s without Expression" % varname
+                    print("Error: Lambda %s without Expression" % varname)
                     return Variable()
     
                 abs.expr = self.getExpression( tail, vars1 )
@@ -85,7 +85,7 @@ class Parser:
                         expr = self.lib[ varname ]          # Try to search in Library
                     except:
                         expr = Variable()
-                        print "Warning: Free Variable '%s': %s" % (varname, expr)
+                        print("Warning: Free Variable '%s': %s" % (varname, expr))
 
             
             elif LET == vartype:            # Variable of Let-Expression
@@ -93,7 +93,7 @@ class Parser:
                 let = Let( be= None, expr= None )
 
                 if not tail or len( tail ) < 2:
-                    print "Error: Let %s without Expression" % varname
+                    print("Error: Let %s without Expression" % varname)
                     return Variable()
                     
                 vars1 = copy.copy( vars )   # Create copy of bound Variables
@@ -109,7 +109,7 @@ class Parser:
                 return let
                 
             else:
-                raise "Parser Error: Unknow var %s::%d" % (varname,vartype)
+                raise Exception("Parser Error: Unknow var %s::%d" % (varname,vartype))
                 
 
         if func:

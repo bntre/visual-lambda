@@ -1,9 +1,9 @@
-Project moved from https://code.google.com/archive/p/visual-lambda/
+Project moved from https://code.google.com/archive/p/visual-lambda/  
 and from https://bitbucket.org/bntr/visual-lambda too.
 
 # Visual Lambda Calculus
 
-![](http://bntr.planet.ee/lambda/loop_.gif)
+![logo](http://bntr.planet.ee/lambda/loop_.gif)
 
 Visual Lambda environment allows intuitive manipulation of lambda calculus expressions.
 
@@ -27,8 +27,8 @@ Visual Lambda environment allows intuitive manipulation of lambda calculus expre
 ## Run
     python manipulator.py
 
-## Interface
-- [readme.txt](readme.txt)
+## Controls
+- [controls.txt](controls.txt)
 
 ## Related works
 - [Programming with Visual Expressions, Wayne Citrin](http://users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)

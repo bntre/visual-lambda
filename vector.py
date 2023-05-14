@@ -7,7 +7,7 @@ import operator as op
 
 
 def is_numeric( obj ):
-    return isinstance( obj, (int, long, float) )
+    return isinstance( obj, (int, float) )
 
 
 
@@ -55,7 +55,7 @@ class Vector( object ):
     #def __rmul__( a, k ):
     #    return a.__mul__( k )
 
-    def __div__( a, k ):
+    def __truediv__( a, k ):
         return a.__mul__( 1.0/k )
 
     def __abs__( a ):
@@ -117,8 +117,8 @@ class Vector2( Vector ):
                 Vector.__init__( self, *args )
        
         else:
-            print args,dict
-            raise "wrong constructor"
+            print(args, dict)
+            raise Exception("wrong constructor")
 
 
     def __repr__( self ):
@@ -130,7 +130,7 @@ class Vector2( Vector ):
         if name in alias:
             return self.vector[ alias[ name ] ]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def __setattr__( self, name, value ):
         alias = { 'x':0, 'y':1 }
@@ -182,7 +182,7 @@ class Vector2( Vector ):
         return a
 
     def complex( self ):
-        #print "complex", self
+        #print("complex", self)
         return complex( *self.vector )
         
         

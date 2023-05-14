@@ -100,8 +100,8 @@ class ColorSpace:
         debug('color','init color groups:',groups)
 
         # Create groups and vars collections
-        map( self.addGroup, groups )
-        
+        for g in groups:
+            self.addGroup(g)
 
 
     def addGroup( self, vars ):

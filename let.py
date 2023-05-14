@@ -46,7 +46,7 @@ class Red:
                 XISY:  'Garbage: x=y in E',  \
                 ONEREF:'Garbage: 1 ref' }[ self.result ]
         if self.data:
-            str += ' ' + `self.data`
+            str += ' ' + repr(self.data)
         return str
 
     def __eq__( self, other ):  # ?? what for (compare 'data' ?)
@@ -79,11 +79,11 @@ class Expression( Node ):
 
     def __repr__( self ):
         "Sets Representation to Brackets according the Type"
-        return 'root of ' + `self.expr`
+        return 'root of ' + repr(self.expr)
 
     def repr( self, level=0 ):
         "Sets Representation to Brackets according the Type"
-        return ( level < self.type and '(%s)' or '%s' ) % `self`
+        return ( level < self.type and '(%s)' or '%s' ) % repr(self)
 
     def name( self ):
         #return hex( id(self) )
@@ -93,11 +93,11 @@ class Expression( Node ):
     # References
 
     def replace( self, vars ):
-        for c in self.childs.itervalues():
+        for c in self.childs.values():
             c.replace( vars )
 
     def unref( self ):
-        for c in self.childs.itervalues():
+        for c in self.childs.values():
             c.unref()
 
     def copy( self, vars= None ):
@@ -164,7 +164,7 @@ class Expression( Node ):
         # Deref All Let-expressions
         # in case of Pure Lambda-calculus
         if not mode.lazy:
-            print 'not lazy'
+            print('not lazy')
             for r in root.expr.deref():   # Deref all
                 yield r
 
@@ -341,9 +341,9 @@ class Let( Expression ):
 
     def __repr__( self ):
         if debugTag('refs'):
-            return '[%d]let %s = %s in %s' % ( self.refs, self.name(), `self.be`, `self.expr`)
+            return '[%d]let %s = %s in %s' % ( self.refs, self.name(), repr(self.be), repr(self.expr))
         else:
-            return 'let %s = %s in %s' % ( self.name(), `self.be`, `self.expr`)
+            return 'let %s = %s in %s' % ( self.name(), repr(self.be), repr(self.expr))
 
 
     def derefBe( self ):
@@ -448,7 +448,7 @@ class Abstraction( Expression ):
             else:
                 vars.append( abs.name() )
             abs = abs.expr
-        return '\\%s. %s' % (' '.join( vars ), `abs`)
+        return '\\%s. %s' % (' '.join( vars ), repr(abs))
 
 
 
@@ -588,17 +588,17 @@ class Application( Expression ):
 def reduce( expr, mode=None ):
 
     mode = mode or Mode()
-    print "mode:", mode.__dict__
+    print("mode:", mode.__dict__)
 
     r = 'Reduce:'
-    print r
-    print expr
+    print(r)
+    print(expr)
 
     root = expr.withRoot()
     while r:
         r = root.reduceStep( mode )
 
-    print '-------'
+    print('-------')
     return root.expr
 
 
@@ -606,11 +606,11 @@ def reduce( expr, mode=None ):
 def printClosed( expr ):
     "For test: print closed Sub-expressions"
     vars, gs = expr.getClosed()
-    print expr
-    print 'free:', vars
-    print 'groups:'
+    print(expr)
+    print('free:', vars)
+    print('groups:')
     for g in gs:
-        print ' '.join([abs.name() for abs in g])
+        print(' '.join(abs.name() for abs in g))
 
 
 

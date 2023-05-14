@@ -20,7 +20,7 @@ class Matrix:
             self.matrix[r][c] = int( r == c )
 
     def __repr__( self ):
-        return `self.matrix`
+        return repr(self.matrix)
 
     def __getitem__( self, index ):
         return self.matrix[ index ]
@@ -87,7 +87,7 @@ class InversibleMatrix( Matrix ):
             return res
         
         else:
-            raise "Not implemented"
+            raise Exception("Not implemented")
 
 
     
