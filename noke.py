@@ -29,11 +29,9 @@ class Noke:
     def __repr__( self ):
         return 'Noke( %s, %s )' % ( self.node, self.key )
 
-    def __cmp__( self, other ):
-        if self.node == other.node and  \
-           self.key  == other.key:
-            return 0
-        return 1
+    def __eq__( self, other ):
+        return self.node == other.node and  \
+               self.key  == other.key
 
     def __call__( self ):
         return self.get()

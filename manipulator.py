@@ -53,12 +53,9 @@ class Selection:
     def __nonzero__( self ):
         return bool( self.item )
 
-    def __cmp__( self, other ):
-        if self.item == other.item and  \
-           self.noke == other.noke:
-             return 0
-        else:
-             return 1
+    def __eq__( self, other ):
+        return self.item == other.item and  \
+               self.noke == other.noke
 
     def __repr__( self ):
         return '%s %s' % (repr(self.item), repr(self.noke))

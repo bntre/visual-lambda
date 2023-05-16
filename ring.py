@@ -17,7 +17,7 @@ class Ring:
     unit = None     # Unit-Ring as constant
 
     def __init__( self, pos, r ):
-        "Create Ring from Positiion and Radius  or  from 4-Vector"
+        "Create Ring from Position and Radius  or  from 4-Vector"
         self.pos = pos and Vector2( pos )
         self.r   = r
         
@@ -37,6 +37,7 @@ class Ring:
 
 
     def mix( self, kpos, kr, a, b ):
+        "Mixing rings a and b"
         self.pos = mix( kpos, a.pos, b.pos )
         self.r   = mix( kr,   a.r,   b.r )
             

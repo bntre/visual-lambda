@@ -107,7 +107,7 @@ class TransformMatrix( InversibleMatrix ):
 
     def setTranspose( self, cx, cy, k ):
         
-        def set( m ):
+        def set_( m ):
             m.unit()
             m[0][3] = cx
             m[1][3] = cy
@@ -115,23 +115,23 @@ class TransformMatrix( InversibleMatrix ):
             m[1][1] = k
             m[2][2] = k
 
-        set( self )
+        set_( self )
 
         k **= -1
         cx *= -k
         cy *= -k
-        set( self.inversion )
+        set_( self.inversion )
         
 
 
     def setReflection( self ):
         
-        def set( m ):
+        def set_( m ):
             m.unit()
             m[1][1] = -1
 
-        set( self )
-        set( self.inversion )
+        set_( self )
+        set_( self.inversion )
 
 
 
@@ -140,26 +140,26 @@ class TransformMatrix( InversibleMatrix ):
         if not isinstance( dir, Vector2 ):
             dir = Vector2( angle= dir )
         
-        def set( m ):
+        def set_( m ):
             m.unit()
             m[0][0] =  dir.x
             m[0][1] = -dir.y
             m[1][0] =  dir.y
             m[1][1] =  dir.x
 
-        set( self )
+        set_( self )
 
         dir = dir.conjugate()
-        set( self.inversion )
+        set_( self.inversion )
 
 
     def setExpand( self, k ):
         
-        def set( m ):
+        def set_( m ):
             m.unit()
             m[2][2] = k
 
-        set( self )
+        set_( self )
 
         k **= -1
-        set( self.inversion )
+        set_( self.inversion )

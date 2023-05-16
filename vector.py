@@ -38,18 +38,18 @@ class Vector( object ):
 
 
     def __add__( a, b ):
-        return a.__class__( map( op.add, a, b ) )
+        return a.__class__( tuple(map( op.add, a, b )) )
 
     def __sub__( a, b ):
-        return a.__class__( map( op.sub, a, b ) )
+        return a.__class__( tuple(map( op.sub, a, b )) )
 
     def __neg__( a ):
-        return a.__class__( map( op.neg, a ) )
+        return a.__class__( tuple(map( op.neg, a )) )
 
     def __mul__( a, b ):
         if is_numeric( b ):
             b = [b] * len(a)
-        return a.__class__(  map( op.mul, a, b ) )
+        return a.__class__( tuple(map( op.mul, a, b )) )
 
 
     #def __rmul__( a, k ):

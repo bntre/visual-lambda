@@ -516,7 +516,7 @@ class Figure( FieldItem ):
                 Bubble.detTights(b)
                 
             # Det Corrections
-            if not any( map( Bubble.detCorrections, bubbles ) ):
+            if not any( list(map( Bubble.detCorrections, bubbles )) ):
                 debug( 'build', "ok" )
                 break
                 
