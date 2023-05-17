@@ -128,17 +128,15 @@ class Manipulator( Window ):
 
     def __init__( self, caption ):
 
-        Window.__init__( self, caption )
+        windowSize = tuple(map(int, config.get( 'windowsize', '600x450' ).split("x")))
 
+        Window.__init__( self, caption, windowSize )
 
-        dirChilds = Vector2( (-1,0) )
-
-        
         self.items = []
         
         
         # Load default workspace
-        filename = config.get( 'workspace', 'default.xml' )
+        filename = config.get( 'workspace', 'default_workspace.xml' )
         if filename:
             if not saving.load( self, filename ):
                 print("Can't open default workspace")
@@ -153,6 +151,7 @@ class Manipulator( Window ):
 
 
         self.selection = Selection( None )
+        self.selectionChanged = True        # Used to update statusbar text
         self.highlight = Selection( None )  # Dragging Figure over another Figure
         self.dragPos   = None               # Start drag position
 
@@ -219,9 +218,10 @@ class Manipulator( Window ):
         #-----------------------------------------------------
         # Prepare toolbars
         
+        self.statusbar = toolbar.Statusbar()
         self.toolbars = []
 
-        ims = toolbar.ImageSet( 'icons.bmp', (48,48) )
+        ims = toolbar.ImageSet( 'toolbar_icons.png', (48,48) )
         
         # Create font for Menus
         fontsize = int( config.get( 'fontsize' ) )  or  11
@@ -258,13 +258,8 @@ class Manipulator( Window ):
         bottom.add( self.eventRedo,                 'Redo (Ctrl+Y, Alt+Right)',                     (ims,3,2) )
         self.toolbars.append( bottom )
 
-
-
-
         self.invalidate()
 
-
-    
 
 
     def drawItems( self ):
@@ -538,7 +533,27 @@ class Manipulator( Window ):
         
         self.viewMatrix = t * z * t.inverse() * self.viewMatrix
 
-
+    def updateSelectionStatus( self ):
+        # Collect selection status lines
+        lines = []
+        
+        s = self.selection
+        if s.figure():
+            node = s.noke.node              # Selection
+            expr = s.item.expression.expr   # Whole Figure
+            if node and node != expr:
+                lines.append("Selection: %s" % node)
+            if expr:
+                lines.append("Term: %s" % expr)
+        elif s.text():
+            lines.append("Text: %s" % s.item.text)
+        
+        # Update statusbar text
+        self.statusbar.setText(*lines)
+        
+        # Also print the whole selection to console
+        for l in lines: print(l)
+        
 
     def paint( self ):
         "Draws and flips bg and rings"
@@ -562,7 +577,12 @@ class Manipulator( Window ):
         # Draw Toolbars
         for t in self.toolbars:
             t.draw( surface, self.size )
-            
+        
+        # Update Statusbar
+        if self.selectionChanged:
+            self.selectionChanged = False
+            self.updateSelectionStatus()
+        self.statusbar.draw( surface, self.size )
         
         # Flip screen
         self.flip()
@@ -582,12 +602,14 @@ class Manipulator( Window ):
             
                 debug( 'input', 'MOUSEBUTTONDOWN. button', event.button )
                 
+                modCtrl = pygame.key.get_mods() & KMOD_CTRL
+                
                 if event.button in (4,5):   # Wheel UP or DOWN  -  Zoom
                     if self.items:        # Don't zoom if no Figures
                         self.zoomView( pos, event.button )
                         self.invalidate()
                 
-                elif event.button == 1:     # Left Button
+                elif event.button == 1 and not modCtrl:  # Left Button (without Ctrl)
 
                     # Toolbars
                     item = self.pickToolbarItem( pos )
@@ -602,7 +624,7 @@ class Manipulator( Window ):
                             self.invalidate()
                         
                 
-                elif event.button == 3:         # Right Button
+                elif event.button == 3 or event.button == 1 and modCtrl:   # Right Button or Left Button with Ctrl
                     if self.selection.figure(): # Try to Reref Selected Var or Abs
                         pick = self.pick( pos, figuresOnly= True )
                         if pick and pick.item == self.selection.item:
@@ -624,26 +646,27 @@ class Manipulator( Window ):
             if MOUSEBUTTONUP == event.type: # End Drag
                 
                 # Dropping
-                if self.dragPos and self.selection.figure() and self.highlight:
-                    debug(2,'dropped',self.selection.item.expression,'-->',self.highlight.noke)
-                    if self.highlight.noke: #!!! added for python3
-                        dragged = self.selection.item
-                        construct.applicate( dragged.expression.expr, 
-                                             self.highlight.noke.node )
-                        
-                        self.items.remove( dragged )
-                        
-                        new = self.highlight.item
+                if self.dragPos and self.selection.figure() and self.highlight.figure():
+                    #debug(2,'dropped',self.selection.item.expression,'-->',self.highlight.noke)
+                    dragged = self.selection.item
+                    
+                    construct.applicate( dragged.expression.expr, 
+                                         self.highlight.noke.node )
+                    
+                    self.items.remove( dragged )
+                    
+                    new = self.highlight.item
 
-                        new.history.step( new.expression.copy() )
+                    new.history.step( new.expression.copy() )
 
-                        new.detColorSpace()
-                        new.clean()
-                        new.buildGroups()
-                        new.buildGeometry()
-                        self.selection = Selection( new )
-                        self.highlight = None
-                        self.invalidate()
+                    new.detColorSpace()
+                    new.clean()
+                    new.buildGroups()
+                    new.buildGeometry()
+                    self.selection = Selection( new )
+                    self.selectionChanged = True
+                    self.highlight = Selection( None )
+                    self.invalidate()
                     
                 
                 self.dragPos = None
@@ -670,6 +693,9 @@ class Manipulator( Window ):
                         toolbar.ToolbarItem.highlighted = item
                         if self.showInfo and item and item.tip:
                             print('tip:', item.tip)
+                            self.statusbar.setText(item.tip)
+                        else:
+                            self.statusbar.setText()
                         redraw = True
 
                 if redraw:
@@ -748,6 +774,7 @@ class Manipulator( Window ):
         copy = item.copy()
         self.items.insert( 0, copy )
         self.selection = Selection( copy )
+        self.selectionChanged = True
         self.invalidate()
 
     @needSelectedItem
@@ -757,6 +784,7 @@ class Manipulator( Window ):
         self.selection = Selection( None )
         if self.items:
             self.selection = Selection( self.items[0] )
+        self.selectionChanged = True
         self.invalidate()
 
 
@@ -787,6 +815,7 @@ class Manipulator( Window ):
             figure.expression = expression.copy()
             figure.detColorSpace()
             self.selection = Selection( figure )
+            self.selectionChanged = True
             return figure
 
     @rebuildAfter
@@ -798,6 +827,7 @@ class Manipulator( Window ):
             figure.expression = expression.copy()
             figure.detColorSpace()
             self.selection = Selection( figure )
+            self.selectionChanged = True
             return figure
 
 
@@ -818,6 +848,7 @@ class Manipulator( Window ):
         construct.delete( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure )
+        self.selectionChanged = True
         return figure
 
     @rebuildAfter
@@ -828,6 +859,7 @@ class Manipulator( Window ):
         figure.history.step( figure.expression.copy() )
         figure.colorspace.add( None, [[abs]] )      # ??
         self.selection = Selection( figure, noke.up() )
+        self.selectionChanged = True
         return figure
 
     @rebuildAfter
@@ -837,6 +869,7 @@ class Manipulator( Window ):
         construct.applicationBefore( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure, noke.up() )
+        self.selectionChanged = True
         return figure
 
     @rebuildAfter
@@ -846,6 +879,7 @@ class Manipulator( Window ):
         construct.applicationAfter( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure, noke.up() )
+        self.selectionChanged = True
         return figure
 
 
@@ -1016,26 +1050,22 @@ class Manipulator( Window ):
                     else:
                         pick.noke = withAppls[ -1 ]
 
-                print()
-                node = pick.noke.node               # Selection
-                expr = pick.item.expression.expr    # Whole Figure
-                if expr != node:
-                    print('figure:', expr)
-                print('selection:', node)
-
 
             elif isinstance( item, TextItem ):
-                print()
-                print('text:', pick.item.text)
+                #print()
+                #print('text:', pick.item.text)
+                pass
                 
 
             self.selection = pick        # {figure,noke}
+            self.selectionChanged = True
                 
             self.dragPos   = pos         # Save touched Ring and cursor start Position
             return True
 
 
         self.selection = Selection( None )    # Deselect
+        self.selectionChanged = True
         self.dragPos   = None
 
         return True
@@ -1110,6 +1140,7 @@ class Manipulator( Window ):
         #self.selection = Selection( figure, figure.eating.letnoke.through() )
         #let = figure.eating.let
         self.selection = Selection( figure )
+        self.selectionChanged = True
         #debug(2,'selected:',self.selection)
         
         figure.eating = None
@@ -1125,7 +1156,8 @@ class Manipulator( Window ):
         for reduced in figure.expression.postReduce( self.mode ):
             if let.DEREF == reduced.result:
                 figure.colorspace.add( reduced.data )
-                self.selection = Selection( figure, Noke( reduced.data ) )                        
+                self.selection = Selection( figure, Noke( reduced.data ) )
+                self.selectionChanged = True
             # Else reduced.result is some garbage - do nothing
             
             debug('eat', reduced.result )

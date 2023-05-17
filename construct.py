@@ -16,6 +16,7 @@ def applicate( dropped, node ):
     #appl = let.Application( func= func, arg= node )
     #node.subst( appl )
 
+    #!!! why? it seems like bug when dropping to a free variable (single circle): no application occured
     if VAR == node.type and 0 == node.ref:   # Replace Free Variable to Dropped Expression
         node.subst( dropped )
     

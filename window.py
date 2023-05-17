@@ -12,10 +12,10 @@ import  random
 
 class Window:
     
-    def __init__( self, caption ):
+    def __init__( self, caption, size ):
 
         pygame.init()
-        self.size = 600,450     # Size of window for Y-coordinate reorientation
+        self.size = size     # Size of window for Y-coordinate reorientation
         self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
         
         self.caption = caption
@@ -121,9 +121,10 @@ class Window:
     def handleEvent( self, event ):
         "Process standart events"
         if pygame.VIDEORESIZE == event.type:
-            self.size = event.size
-            self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
-            self.paint()
+            if self.size != event.size:
+                self.size = event.size
+                self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
+                self.paint()
 
         elif events.ONPAINTEVENT == event.type:
             self.paint()

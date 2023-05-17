@@ -55,7 +55,7 @@ Construction of terms
         Insert Application after        Ctrl+Insert, Ctrl+A
         Insert Lambda                   Alt+Insert,  L
         Bind Variable/Lambda with 
-          selected Lambda/Variable      Right Mouse Button
+          selected Lambda/Variable      RClick or Ctrl+LClick
           
     Applicate                           Drop Item onto another
 

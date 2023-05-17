@@ -5,7 +5,7 @@
 debuglevel = 3
 
 # Str Flag (Tags)
-debugtags = { 'refs':0, 'input':0, 'build':0, 'red':1, 'con':1, 'parse':1,
+debugtags = { 'refs':0, 'input':0, 'build':0, 'red':1, 'con':0, 'parse':1,
               'eat':0, 'event':0, 'hist':1, 'draw':0, 'color':0, 'save':1,
             }
 

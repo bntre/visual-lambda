@@ -106,7 +106,8 @@ class Toolbar:
 
     topmargin  = 30
     sidemargin = 8
-
+    bottommargin = 40  # space used for statusbar
+    
     
     def __init__( self, align ):
         self.align  = align
@@ -140,9 +141,9 @@ class Toolbar:
             return pygame.Rect( side - self.width, top, self.width, self.length )
 
         elif BOTTOM == self.align:
-            side = size[1] - Toolbar.sidemargin
+            bottom = size[1] - Toolbar.bottommargin
             left = ( size[0] - self.length ) / 2
-            return pygame.Rect( left, side - self.width, self.length, self.width )
+            return pygame.Rect( left, bottom - self.width, self.length, self.width )
 
 
     def iterItemPoses( self, size ):
@@ -162,10 +163,10 @@ class Toolbar:
                 top += i.size[1]
 
         elif BOTTOM == self.align:
-            side = size[1] - Toolbar.sidemargin
+            bottom = size[1] - Toolbar.bottommargin
             left = ( size[0] - self.length ) / 2
             for i in self.items:
-                yield i, ( left, side - i.size[1] )
+                yield i, ( left, bottom - i.size[1] )
                 left += i.size[0]
 
 
@@ -187,4 +188,26 @@ class Toolbar:
                    pos[1] < cur[1] < pos[1] + item.size[1]:
                     return item
 
+
+class Statusbar:
+    
+    def __init__(self):
+        self.lines        = []
+        self.linesUpdated = False
+        self.lineSurfaces = []
+    
+    def setText(self, *lines):
+        if len(self.lines) == len(lines) and  \
+            all(l == ll for (l,ll) in zip(self.lines, lines)): return  # nothing changed
+        self.lines = lines
+        self.linesUpdated = True
+    
+    def draw(self, surface, size):
+        if self.linesUpdated:
+            self.linesUpdated = False
+            self.lineSurfaces = [ToolbarItem.font.render( line, False, (0,0,0) ) for line in self.lines]
+        y = size[1]
+        for s in self.lineSurfaces[::-1]:
+            surface.blit( s, (Toolbar.sidemargin, y - ToolbarItem.fontsize * 7//5) )
+            y -= ToolbarItem.fontsize * 7//5
 
