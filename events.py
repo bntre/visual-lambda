@@ -4,14 +4,14 @@ import  pygame
 import  time
 
 
-TIMEREVENT      = pygame.USEREVENT + 0
-DELAY = 60
+#TIMEREVENT      = pygame.USEREVENT + 0
+#DELAY = 60
 
 
-EATINGEVENT     = pygame.USEREVENT + 1
+#EATINGEVENT     = pygame.USEREVENT + 1
 
 
-COLOREVENT      = pygame.USEREVENT + 2
+#COLOREVENT      = pygame.USEREVENT + 2
 
 
 ENDURINGEVENT   = pygame.USEREVENT + 3

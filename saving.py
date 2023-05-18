@@ -1,8 +1,8 @@
 
-from    debug       import  * 
-
+import  os
 from    xml.dom     import  minidom
 
+from    debug       import  *
 
 from    figure      import  Figure
 from    fielditem   import  TextItem
@@ -14,7 +14,7 @@ import  refnames
 
 def save( manipulator, filename ):
 
-    doc = minidom.Document()    
+    doc = minidom.Document()
     workspace = doc.createElement("workspace")
     doc.appendChild( workspace )
 
@@ -40,23 +40,27 @@ def save( manipulator, filename ):
 
         items.appendChild( item )
 
+    filepath = os.path.join('workspaces', filename )
     try:
-        f = open( filename, "w" )
+        f = open( filepath, "w" )
         doc.writexml( f, addindent=' ', newl='\n' )
         f.close()
-        debug('save', 'saved to', filename )
     except:
-        print("Error. Can't write to", filename)
+        print("Error. Can't write to", filepath)
+        return False
 
+    debug('save', 'saved to', filename )
+    return True
     
 
     
 def load( manipulator, filename ):
 
+    filepath = os.path.join('workspaces', filename )
     try:
-        dom = minidom.parse( filename )
+        dom = minidom.parse( filepath )
     except IOError:
-        print("Error. Can't read", filename)
+        print("Error. Can't read", filepath)
         return False
 
     manipulator.items = []

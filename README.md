@@ -21,11 +21,11 @@ Visual Lambda environment allows intuitive manipulation of lambda calculus expre
 - ['Y I' evaluation](http://bntr.planet.ee/lambda/Y_I.gif)
 
 ## Dependencies
-- python 2.5+
-- pygame 1.8+
+- python 3
+- pygame
 
 ## Run
-    python manipulator.py
+    python main.py
 
 ## Controls
 - [controls.txt](controls.txt)

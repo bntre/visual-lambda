@@ -1,6 +1,7 @@
 
 
 import  datetime
+import  asyncio
 
 import  pygame
 from    pygame.locals  import * 
@@ -192,9 +193,9 @@ class Manipulator( Window ):
                                               None:         self.eventAddApplicationBefore },
 
 
-                            K_s:            { KMOD_CTRL:    self.eventSave,
-                                              KMOD_ALT:     self.eventModeBySelection },
-                            K_o:            { KMOD_CTRL:    self.eventLoad },
+                            K_s:            { KMOD_ALT:     self.eventModeBySelection,
+                                              KMOD_CTRL:    self.eventSaveWorkspace },
+                            K_o:            { KMOD_CTRL:    self.eventLoadWorkspace },
                             
                             K_q:            self.eventModeQuick,
                             K_a:            { KMOD_ALT:     self.eventModeStrategy,
@@ -229,16 +230,18 @@ class Manipulator( Window ):
         toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
         
         left = toolbar.Toolbar( toolbar.LEFT )
-        left.add( self.eventInputItem,              'Input Item from console (I)',   'Input Item' )
+        if config.ALLOW_SYSTEM_CONSOLE:
+          left.add( self.eventInputItem,            'Input Item from console (I)',   'Input Item' )
         left.add( None, None, '' )
         left.add( None, None, 'Reduction' )
         left.add( self.eventModeStrategy,           'Toggle reduction strategy (Alt+A)',    ' Normal order',     ' Applicative',  lambda:self.mode.applicative )
         left.add( self.eventModeLazy,               'Toggle calculus (Alt+L, Alt+P)',       ' Pure Lambda',      ' Lazy',         lambda:self.mode.lazy )
         left.add( self.eventModeBySelection,        'Reduction inside selection only or the whole expression (Alt+S)',  
                                                                            ' whole expression', ' in selection', lambda:self.mode.redex )
-        left.add( None, None, '' )
-        left.add( self.eventSave,                   'Save Workspace. Input file name from console. (Ctrl+S)',  'Save' )
-        left.add( self.eventLoad,                   'Load Workspace. Input file name from console. (Ctrl+O)',  'Load' )
+        if config.ALLOW_SYSTEM_CONSOLE:
+          left.add( None, None, '' )
+          left.add( self.eventSaveWorkspace,        'Save Workspace. Input file name from console. (Ctrl+S)',  'Save' )
+          left.add( self.eventLoadWorkspace,        'Load Workspace. Input file name from console. (Ctrl+O)',  'Load' )
         self.toolbars.append( left )
     
         right = toolbar.Toolbar( toolbar.RIGHT )
@@ -260,6 +263,21 @@ class Manipulator( Window ):
 
         self.invalidate()
 
+
+    async def run( self ):
+    
+        while True:
+        
+            for e in pygame.event.get():
+                self.handleEvent( e )
+                if e.type == pygame.QUIT:
+                    return
+            
+            if config.ALLOW_SYSTEM_CONSOLE:
+                self.consoleCheck()
+            
+            await asyncio.sleep(0)
+            
 
 
     def drawItems( self ):
@@ -558,17 +576,18 @@ class Manipulator( Window ):
     def paint( self ):
         "Draws and flips bg and rings"
         
-        surface = self.getSurface()
-        
         # Erase
-        self.erase()
+        eraseColor = self.isFrozen() and (0x60,0x60,0x60) or (0xFF,0xFF,0xFF)
+        self.erase(eraseColor)
         
         # Draw Field Items
         self.drawItems()
         
+        surface = self.getSurface()
+        
         # Export Frame as bitmap
         if Enduring.exportMode:
-            filename = 'frame_%s_%05d.bmp' % ( strDate(), Enduring.exportModeFrame )
+            filename = 'frame_%s_%05d.png' % ( strDate(), Enduring.exportModeFrame )
             Enduring.exportModeFrame += 1
             
             pygame.image.save( surface, filename )
@@ -598,8 +617,6 @@ class Manipulator( Window ):
             
             if MOUSEBUTTONDOWN == event.type:
 
-                #test self.addUserEvent( TEMPEVENT, pos=(2,3), ptr=self )
-            
                 debug( 'input', 'MOUSEBUTTONDOWN. button', event.button )
                 
                 modCtrl = pygame.key.get_mods() & KMOD_CTRL
@@ -692,10 +709,11 @@ class Manipulator( Window ):
                     if item != toolbar.ToolbarItem.highlighted:
                         toolbar.ToolbarItem.highlighted = item
                         if self.showInfo and item and item.tip:
-                            print('tip:', item.tip)
+                            #print('tip:', item.tip)
                             self.statusbar.setText(item.tip)
                         else:
                             self.statusbar.setText()
+                            self.selectionChanged = True  # Restore selection text to statusbar
                         redraw = True
 
                 if redraw:
@@ -725,23 +743,22 @@ class Manipulator( Window ):
         
         elif pygame.USEREVENT <= event.type:
             
-            if TIMEREVENT == event.type:
-                pass
+            #if TIMEREVENT == event.type:
+            #    pass
                 
-            elif ENDURINGEVENT == event.type:
+            if ENDURINGEVENT == event.type:
                 for e in event.data.handler():
-                    self.addEvent( e )
+                    self.postEvent( e )
                 self.invalidate()
                 
                 
-            elif COLOREVENT == event.type:
-                for e in event.data.handler( event ):
-                    self.addEvent( e )
+            #elif COLOREVENT == event.type:
+            #    for e in event.data.handler( event ):
+            #        self.postEvent( e )
 
             else:
-                #print('got USEREVENT', event)
+                debug('event', 'Unexpected USEREVENT', event)
                 pass
-
 
 
         Window.handleEvent( self, event )
@@ -750,23 +767,23 @@ class Manipulator( Window ):
     #---------------------------------------------
     # Event Procs
 
-    def eventInputItem( self ):
-
-        # Get Item
-        expression = self.consoleInput('Input Expression >> ')
-        if expression:        
-            if expression[0] in ('"',"'"):
-                item = TextItem( eval(expression) )
-            else:
-                item = Figure( expression )
-    
-            # Set position to center of view
-            v = self.centerOfView()
-            item.position.setTranspose( v[0],v[1], 1 )
-            item.refreshTransform()
-            
-            self.items.insert( 0, item )
-            self.invalidate()
+    if config.ALLOW_SYSTEM_CONSOLE:
+        def eventInputItem( self ):
+            self.consoleInput('Input Expression to add >> ', self.onInputItem)
+        def onInputItem( self, expression ):
+            if expression:
+                if expression[0] in ('"',"'"):
+                    item = TextItem( eval(expression) )
+                else:
+                    item = Figure( expression )
+        
+                # Set position to center of view
+                v = self.centerOfView()
+                item.position.setTranspose( v[0],v[1], 1 )
+                item.refreshTransform()
+                
+                self.items.insert( 0, item )
+                self.invalidate()
 
     
     @needSelectedItem
@@ -895,15 +912,21 @@ class Manipulator( Window ):
         self.invalidate()
 
 
-    def eventLoad( self ):
-        filename = self.consoleInput('Load Workspace >> ')        
-        if filename and saving.load( self, filename ):
-            self.invalidate()
+    # Load/Save Workspace
+    if config.ALLOW_SYSTEM_CONSOLE:
+    
+        def eventLoadWorkspace( self ):
+            self.consoleInput('Input name of Workspace to load >> ', self.onLoadWorkspaceName )
+        def onLoadWorkspaceName( self, filename ):
+            if filename and saving.load( self, filename ):
+                self.invalidate()
 
-    def eventSave( self ):
-        filename = self.consoleInput('Save Workspace >> ')
-        if filename:
-            saving.save( self, filename )
+        def eventSaveWorkspace( self ):
+            self.consoleInput('Input name to save Workspace >> ', self.onSaveWorkspaceName )
+        def onSaveWorkspaceName( self, filename ):
+            if filename:
+                saving.save( self, filename )
+
 
     def eventSaveScreen( self ):
         pygame.image.save( self.getSurface(), 'screen_%s.bmp' % strDate() )
@@ -1119,7 +1142,7 @@ class Manipulator( Window ):
 
             if let.BETA == reduced.result:      # Beta-redex found
                 figure.eating = eating.Act( figure, reduced.data, self.afterEating )
-                self.addEvent( figure.eating.start() )
+                self.postEvent( figure.eating.start() )
 
             elif let.DEREF == reduced.result:   # Deref done
                 figure.colorspace.add( reduced.data )
@@ -1191,6 +1214,7 @@ class Manipulator( Window ):
         
 
 
-Manipulator('Visual Lambda').run()
-
+asyncio.run(
+    Manipulator('Visual Lambda').run()
+)
 

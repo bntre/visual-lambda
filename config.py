@@ -3,6 +3,16 @@
 import sys, os
 import configparser
 
+#-----------------------------------------------
+# Platform
+
+IS_WEB_PLATFORM = sys.platform == 'emscripten'
+
+ALLOW_SYSTEM_CONSOLE = not IS_WEB_PLATFORM
+
+
+#-----------------------------------------------
+# Config file
 
 cfgFileName = 'config.cfg'
 
@@ -35,13 +45,9 @@ def readCfg():
         f.close()
 
 
-
 def get( key, default= None ):
-    
-    global cfg
     
     if cfg is None:     # Read config.cfg once
         readCfg()
     
-    return  key in cfg  and  cfg[ key ]  or  default
-
+    return cfg.get(key, default)

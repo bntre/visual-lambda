@@ -1,13 +1,12 @@
 
-
-from    debug       import  *
-
 import  pygame
 
+from    debug       import  *
 import  events
+import  config
 
-import  random
-
+if config.ALLOW_SYSTEM_CONSOLE:
+  import  console
 
 
 class Window:
@@ -16,7 +15,8 @@ class Window:
 
         pygame.init()
         self.size = size     # Size of window for Y-coordinate reorientation
-        self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
+        pygame.display.set_mode( self.size, pygame.RESIZABLE )  
+        self.window = pygame.display.get_surface()  # main surface
         
         self.caption = caption
         pygame.display.set_caption( caption )
@@ -28,14 +28,9 @@ class Window:
 
         self.surface = None     # Draw to other Surface, not self.window
         
-       
         # Invalidation
-        self.onpaint = {}
-        self.onpaint['event'] = pygame.event.Event( events.ONPAINTEVENT )
-        self.onpaint['sent']  = False
-        #self.onpaint = {'event':pygame.event.Event( events.ONPAINTEVENT ), 'sent':False}
-        
-        
+        self.paintEvent = pygame.event.Event( events.ONPAINTEVENT )
+        self.paintEventSent = False
         
         
     def __del__( self ):
@@ -44,24 +39,15 @@ class Window:
 
 
 
-
-    def run( self ):
-        while True:
-            for event in pygame.event.get():
-                self.handleEvent( event )
-                if pygame.QUIT == event.type:
-                    return
-
-
     def getSurface( self ):
         return  self.surface or self.window
 
 
     def invalidate( self ):
         "Set Event to redraw window"
-        if not self.onpaint['sent']:
-            self.addEvent( self.onpaint['event'] )
-            self.onpaint['sent'] = True
+        if not self.paintEventSent:
+            self.postEvent( self.paintEvent )
+            self.paintEventSent = True
 
 
     def erase( self, color=(0xFF,0xFF,0xFF), rect=None ):
@@ -75,7 +61,7 @@ class Window:
         if type( col ) is tuple:
             return col
         if None == col:
-            return (0,0,0)            
+            return (0,0,0)
         return [ (255,0,0), (0,0,255), (0,255,0), (200,200,200), (100,100,100), (179,213,200) ][ col ]
 
     def circle( self, pos, r, col=None, width=1 ):
@@ -109,7 +95,7 @@ class Window:
 
     
     def paint( self ):
-        "Use invalidate() for call this event"
+        "Override and use invalidate() to initiate it"
         pass
 
 
@@ -124,40 +110,45 @@ class Window:
             if self.size != event.size:
                 self.size = event.size
                 self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
-                self.paint()
+                self.invalidate()
 
         elif events.ONPAINTEVENT == event.type:
             self.paint()
-            self.onpaint['sent'] = False
-
-    
-    def consoleInput( self, text ):
-        
-        block = pygame.KEYDOWN, pygame.KEYUP
-
-        pygame.event.set_blocked( block )
-        pygame.display.set_caption( 'Console Mode' )
-
-        inputGot = input( text )
-
-        pygame.display.set_caption( self.caption )
-        pygame.event.set_allowed( block )
-        
-        return inputGot
-
+            self.paintEventSent = False
         
 
-    def addEvent( self, event ):
+    def postEvent( self, event ):
         pygame.event.post( event )
         debug( 'event', 'event added', event )
+    
+    
+    # Console wrapper
+    if config.ALLOW_SYSTEM_CONSOLE:
+    
+        blockedEvents = (  # Events blocked on console input
+            pygame.KEYDOWN, pygame.KEYUP, 
+            pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION
+        )
 
-    def addUserEvent( self, type, **dict ):
-        event = pygame.event.Event( type, **dict )
-        pygame.event.post( event )
-        debug( 'event', 'userevent added', event )
-
-
-
-    #def block( self, block ):
-    #    pygame.event.set_blocked( block )
-        
+        def consoleInput( self, prompt, callback ):
+            
+            pygame.display.set_caption( 'Console input mode' )
+            pygame.event.set_blocked(Window.blockedEvents)
+            self.invalidate()
+            
+            def c( result ):
+                pygame.display.set_caption( self.caption )  # Restore default caption
+                pygame.event.set_allowed(None)              # Allowing all
+                self.invalidate()
+                
+                callback( result )
+            
+            console.requestInput( prompt, c )
+                
+        def consoleCheck( self ):
+            console.checkInputs()
+    
+    def isFrozen( self ):
+        return config.ALLOW_SYSTEM_CONSOLE and console.isWaiting()
+    
+    
