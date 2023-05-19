@@ -6,6 +6,11 @@ import  asyncio
 import  pygame
 from    pygame.locals  import * 
 
+# Issue https://github.com/pygame/pygame/issues/3778 (fixed in pygame 2.4.0)
+USE_GFXDRAW = 0  # set for pygame < 2.4.0; gfxdraw allows negative circle positions, but fill and stroke are not match for small circles
+if USE_GFXDRAW:
+  import  pygame.gfxdraw
+
 import  cursors
 import  toolbar
 
@@ -333,8 +338,15 @@ class Manipulator( Window ):
 
         col = self.getColor( col )
         
-        pygame.draw.circle( surface, col, pos, r, width )
-
+        if USE_GFXDRAW:
+            if width == 0:
+                pygame.gfxdraw.filled_circle( surface, pos[0], pos[1], r, col )
+            else:
+                pygame.gfxdraw.circle( surface, pos[0], pos[1], r, col )
+                if width > 1:
+                    pygame.gfxdraw.circle( surface, pos[0], pos[1], r-1, col )
+        else:
+            pygame.draw.circle( surface, col, pos, r, width )
 
     
     def drawRing( self, surface, figure, drawn, size ):
@@ -483,7 +495,7 @@ class Manipulator( Window ):
         mask = pygame.Surface( size )
         mask.fill( colorMask1 )
         r = toInt(r)
-        pygame.draw.circle( mask, colorMask2, (r,r),r, 0 )
+        self.circle( mask, (r,r), r, colorMask2, width=0 )
         mask.set_colorkey( colorMask2, RLEACCEL )
         surface.blit( mask, (0,0) )
         surface.set_colorkey( colorMask1, RLEACCEL )

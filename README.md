@@ -22,7 +22,7 @@ Visual Lambda environment allows intuitive manipulation of lambda calculus expre
 
 ## Dependencies
 - python 3
-- pygame
+- pygame 2.4.0
 
 ## Run
     python main.py
