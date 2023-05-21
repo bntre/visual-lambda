@@ -7,6 +7,7 @@ import configparser
 # Platform
 
 IS_WEB_PLATFORM = sys.platform == 'emscripten'
+#IS_WEB_PLATFORM = True  # to test web mode
 
 ALLOW_SYSTEM_CONSOLE = not IS_WEB_PLATFORM
 

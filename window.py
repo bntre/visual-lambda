@@ -21,10 +21,11 @@ class Window:
         self.caption = caption
         pygame.display.set_caption( caption )
         
-        #self.font = pygame.font.SysFont( pygame.font.get_default_font(), 16 )
-        #self.font = pygame.font.SysFont( 'system', 20 )   
-        self.font = pygame.font.SysFont( 'lucidaconsole', 11 )
-        #self.font = pygame.font.SysFont( 'couriernew', 14 )
+        fontsize = int( config.get( 'fontsize' ) )  or  11
+        if config.IS_WEB_PLATFORM: 
+            fontsize = fontsize * 3//2  #!!! fixing pygbag
+        self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
+        self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
 
         self.surface = None     # Draw to other Surface, not self.window
         
@@ -90,7 +91,7 @@ class Window:
 
     def text( self, str, pos, col=None ):
         col = self.getColor( col )
-        text = self.font.render( str, False, col )      # "pygame.error: Text has zero width"
+        text = self.font.render( str, self.fontAntialias, col )
         self.getSurface().blit( text, pos )
 
     

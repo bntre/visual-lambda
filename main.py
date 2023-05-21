@@ -135,7 +135,7 @@ class Manipulator( Window ):
     def __init__( self, caption ):
 
         windowSize = tuple(map(int, config.get( 'windowsize', '600x450' ).split("x")))
-
+        
         Window.__init__( self, caption, windowSize )
 
         self.items = []
@@ -176,49 +176,45 @@ class Manipulator( Window ):
         # Drawing 
         self.boldLambda = int( config.get( 'bold_lambda', 0 ) )
 
-        
-        
-        self.eventProcs = { K_i:            self.eventInputItem,
-                            K_d:            self.eventDeleteItem,
-                            K_c:            self.eventCopyItem,
-        
-                            K_RETURN:       { KMOD_CTRL:    self.eventNonstop,
-                                              None:         self.eventReduce },
+        self.keyEventProcs = {
+            K_i:            [ (0,           config.ALLOW_SYSTEM_CONSOLE and self.eventInputItem) ],
+            K_d:            [ (0,           self.eventDeleteItem) ],
+            K_c:            [ (0,           self.eventCopyItem) ],
 
-                            K_BACKSPACE:    self.eventUndo,
-                            K_z:            { KMOD_CTRL:    self.eventUndo },
-                            K_y:            { KMOD_CTRL:    self.eventRedo },
-                            K_LEFT:         { KMOD_ALT:     self.eventUndo },
-                            K_RIGHT:        { KMOD_ALT:     self.eventRedo },
-                            
-                            K_SPACE:        self.eventExpandSelection,                            
-                            K_DELETE:       self.eventDeleteNode,
-                            K_INSERT:       { KMOD_ALT:     self.eventAddLambda,
-                                              KMOD_CTRL:    self.eventAddApplicationAfter,
-                                              None:         self.eventAddApplicationBefore },
+            K_RETURN:       [ (KMOD_CTRL,   self.eventNonstop),
+                              (0,           self.eventReduce ) ],
 
+            K_BACKSPACE:    [ (0,           self.eventUndo) ],
+            K_z:            [ (KMOD_CTRL,   self.eventUndo) ],
+            K_y:            [ (KMOD_CTRL,   self.eventRedo) ],
+            K_LEFT:         [ (KMOD_ALT,    self.eventUndo) ],
+            K_RIGHT:        [ (KMOD_ALT,    self.eventRedo) ],
+            
+            K_SPACE:        [ (0,           self.eventExpandSelection) ],
+            K_DELETE:       [ (0,           self.eventDeleteNode) ],
+            K_INSERT:       [ (KMOD_ALT,    self.eventAddLambda),
+                              (KMOD_CTRL,   self.eventAddApplicationAfter),
+                              (0,           self.eventAddApplicationBefore) ],
 
-                            K_s:            { KMOD_ALT:     self.eventModeBySelection,
-                                              KMOD_CTRL:    self.eventSaveWorkspace },
-                            K_o:            { KMOD_CTRL:    self.eventLoadWorkspace },
-                            
-                            K_q:            self.eventModeQuick,
-                            K_a:            { KMOD_ALT:     self.eventModeStrategy,
-                                              KMOD_CTRL:    self.eventAddApplicationAfter,
-                                              None:         self.eventAddApplicationBefore },
-                            K_l:            { KMOD_ALT:     self.eventModeLazy,
-                                              None:         self.eventAddLambda },
-                            K_v:            self.eventAddVariable,
-                            K_p:            { KMOD_ALT:     self.eventModeLazy },
+            K_s:            [ (KMOD_ALT,    self.eventModeBySelection),
+                              (KMOD_CTRL,   config.ALLOW_SYSTEM_CONSOLE and self.eventSaveWorkspace) ],
+            K_o:            [ (KMOD_CTRL,   config.ALLOW_SYSTEM_CONSOLE and self.eventLoadWorkspace) ],
+            
+            K_q:            [ (0,           self.eventModeQuick) ],
+            K_a:            [ (KMOD_ALT,    self.eventModeStrategy),
+                              (KMOD_CTRL,   self.eventAddApplicationAfter),
+                              (0,           self.eventAddApplicationBefore) ],
+            K_l:            [ (KMOD_ALT,    self.eventModeLazy),
+                              (0,           self.eventAddLambda) ],
+            K_v:            [ (0,           self.eventAddVariable) ],
+            K_p:            [ (KMOD_ALT,    self.eventModeLazy) ],
 
-                            K_e:            { KMOD_ALT:     self.eventExportMode },
-                            
-                            K_F1:           self.eventViewHelp,
-                            K_F5:           self.eventRefreshView,
-                            K_F12:          self.eventSaveScreen   }
-
-
-
+            K_e:            [ (KMOD_ALT,    self.eventExportMode) ],
+            
+            K_F1:           [ (0,           self.eventViewHelp) ],
+            K_F5:           [ (0,           self.eventRefreshView) ],
+            K_F12:          [ (0,           self.eventSaveScreen) ],
+        }
 
     
         #-----------------------------------------------------
@@ -229,11 +225,15 @@ class Manipulator( Window ):
 
         ims = toolbar.ImageSet( 'toolbar_icons.png', (48,48) )
         
+        
         # Create font for Menus
         fontsize = int( config.get( 'fontsize' ) )  or  11
+        if config.IS_WEB_PLATFORM: 
+            fontsize = fontsize * 3//2  #!!! fixing pygbag
         toolbar.ToolbarItem.fontsize = fontsize
         toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
-        
+        toolbar.ToolbarItem.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
+                
         left = toolbar.Toolbar( toolbar.LEFT )
         if config.ALLOW_SYSTEM_CONSOLE:
           left.add( self.eventInputItem,            'Input Item from console (I)',   'Input Item' )
@@ -735,22 +735,12 @@ class Manipulator( Window ):
 
         elif KEYDOWN == event.type:
 
-            try:
-                proc = self.eventProcs[ event.key ]
-
-                if callable( proc ):
-                    proc()
-                
-                elif type( proc ) is dict:
-                    mods = pygame.key.get_mods()
-                    for key in proc.keys():
-                        if not key  or mods & key:
-                            proc[ key ]()
-                            break
-
-            except KeyError:
-                pass
-
+            procs = self.keyEventProcs.get( event.key )
+            if procs:
+                eventMods = event.mod & (KMOD_CTRL | KMOD_ALT)
+                for procMod,proc in procs:
+                    if procMod == eventMods or procMod & eventMods:
+                        proc()
             
         
         elif pygame.USEREVENT <= event.type:

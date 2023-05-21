@@ -49,9 +49,16 @@ class ToolbarItem:
     
     highlighted = None      # single highlighted ToolbarItem
     
+    # set by owner
     font        = None
     fontsize    = 0
-    
+    fontAntialias = False
+
+
+    @staticmethod
+    def render_text(text):
+        return ToolbarItem.font.render( text, ToolbarItem.fontAntialias, (0,0,0) )
+        
     
     def __init__( self, callback, tip, *args ):
 
@@ -76,7 +83,7 @@ class ToolbarItem:
                 self.states.append( (ims,(i,j)) )
                 
             else:                       # String
-                text = ToolbarItem.font.render( arg, False, (0,0,0) )
+                text = ToolbarItem.render_text( arg )
                 #self.size = text.get_size()
                 self.size = maxsize( self.size, ( text.get_size()[0], ToolbarItem.fontsize * 7//5 ) )
                 self.states.append( text )
@@ -205,7 +212,7 @@ class Statusbar:
     def draw(self, surface, size):
         if self.linesUpdated:
             self.linesUpdated = False
-            self.lineSurfaces = [ToolbarItem.font.render( line, False, (0,0,0) ) for line in self.lines]
+            self.lineSurfaces = [ToolbarItem.render_text( line ) for line in self.lines]
         y = size[1]
         for s in self.lineSurfaces[::-1]:
             surface.blit( s, (Toolbar.sidemargin, y - ToolbarItem.fontsize * 7//5) )
