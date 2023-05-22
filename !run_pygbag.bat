@@ -10,6 +10,7 @@ mkdir %DEST%
 
 xcopy *.py %DEST%\
 xcopy config.cfg %DEST%\
+xcopy library.txt %DEST%\
 xcopy toolbar_icons.png %DEST%\
 xcopy workspaces\default_workspace.xml %DEST%\workspaces\
 

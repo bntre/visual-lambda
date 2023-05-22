@@ -40,6 +40,9 @@ import  saving
 
 from    events      import  *
 
+if config.IS_WEB_PLATFORM:
+  import  localstorage
+
 
 
 def strDate():
@@ -144,7 +147,7 @@ class Manipulator( Window ):
         # Load default workspace
         filename = config.get( 'workspace', 'default_workspace.xml' )
         if filename:
-            if not saving.load( self, filename ):
+            if not saving.load_from_file( self, filename ):
                 print("Can't open default workspace")
         
 
@@ -216,6 +219,14 @@ class Manipulator( Window ):
             K_F12:          [ (0,           self.eventSaveScreen) ],
         }
 
+        #-----------------------------------------------------
+
+        if config.ALLOW_SYSTEM_CONSOLE:
+            pygame.time.set_timer(SYSTEMCONSOLE_TIMEREVENT, 100)
+
+        if config.IS_WEB_PLATFORM:
+            pygame.time.set_timer(LOCALSTORAGE_TIMEREVENT, 500)
+        
     
         #-----------------------------------------------------
         # Prepare toolbars
@@ -228,7 +239,7 @@ class Manipulator( Window ):
         
         # Create font for Menus
         fontsize = int( config.get( 'fontsize' ) )  or  11
-        if config.IS_WEB_PLATFORM: 
+        if config.IS_WEB_PLATFORM:
             fontsize = fontsize * 3//2  #!!! fixing pygbag
         toolbar.ToolbarItem.fontsize = fontsize
         toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
@@ -277,9 +288,6 @@ class Manipulator( Window ):
                 self.handleEvent( e )
                 if e.type == pygame.QUIT:
                     return
-            
-            if config.ALLOW_SYSTEM_CONSOLE:
-                self.consoleCheck()
             
             await asyncio.sleep(0)
             
@@ -742,25 +750,24 @@ class Manipulator( Window ):
                     if procMod == eventMods or procMod & eventMods:
                         proc()
             
+        # User events
         
-        elif pygame.USEREVENT <= event.type:
-            
-            #if TIMEREVENT == event.type:
-            #    pass
-                
-            if ENDURINGEVENT == event.type:
-                for e in event.data.handler():
-                    self.postEvent( e )
-                self.invalidate()
-                
-                
-            #elif COLOREVENT == event.type:
-            #    for e in event.data.handler( event ):
-            #        self.postEvent( e )
-
-            else:
-                debug('event', 'Unexpected USEREVENT', event)
-                pass
+        if ENDURINGEVENT == event.type:
+            for e in event.data.handler():
+                self.postEvent( e )
+            self.invalidate()
+        
+       
+        if config.IS_WEB_PLATFORM:
+            if event.type == LOCALSTORAGE_TIMEREVENT:
+                # Check if user has called a browser console command, e.g. inputItem('\\x. x x')
+                localstorage.handle_storage('inputItem', self.onInputItem, "|")
+                localstorage.handle_storage('saveWorkspace', self.onSaveWorkspaceName)
+                localstorage.handle_storage('loadWorkspace', self.onLoadWorkspaceName)
+        
+        if config.ALLOW_SYSTEM_CONSOLE:
+            if event.type == SYSTEMCONSOLE_TIMEREVENT:
+                self.consoleCheck()  # it calls console input callbacks, e.g. self.onLoadWorkspaceFileName
 
 
         Window.handleEvent( self, event )
@@ -772,20 +779,22 @@ class Manipulator( Window ):
     if config.ALLOW_SYSTEM_CONSOLE:
         def eventInputItem( self ):
             self.consoleInput('Input Expression to add >> ', self.onInputItem)
-        def onInputItem( self, expression ):
-            if expression:
-                if expression[0] in ('"',"'"):
-                    item = TextItem( eval(expression) )
-                else:
-                    item = Figure( expression )
-        
-                # Set position to center of view
-                v = self.centerOfView()
-                item.position.setTranspose( v[0],v[1], 1 )
-                item.refreshTransform()
-                
-                self.items.insert( 0, item )
-                self.invalidate()
+            
+    def onInputItem( self, expression ):
+        # expression got from system console or from localStorage exchange
+        if expression:
+            if expression[0] in ('"',"'"):
+                item = TextItem( eval(expression) )
+            else:
+                item = Figure( expression )
+    
+            # Set position to center of view
+            v = self.centerOfView()
+            item.position.setTranspose( v[0],v[1], 1 )
+            item.refreshTransform()
+            
+            self.items.insert( 0, item )
+            self.invalidate()
 
     
     @needSelectedItem
@@ -914,20 +923,34 @@ class Manipulator( Window ):
         self.invalidate()
 
 
-    # Load/Save Workspace
-    if config.ALLOW_SYSTEM_CONSOLE:
+    # Save/Load Workspace
+    if config.ALLOW_SYSTEM_CONSOLE:  # Save to/Load from file
     
         def eventLoadWorkspace( self ):
-            self.consoleInput('Input name of Workspace to load >> ', self.onLoadWorkspaceName )
-        def onLoadWorkspaceName( self, filename ):
-            if filename and saving.load( self, filename ):
+            self.consoleInput('Input name of Workspace to load >> ', self.onLoadWorkspaceFileName )
+        def onLoadWorkspaceFileName( self, filename ):
+            if filename and saving.load_from_file( self, filename ):
                 self.invalidate()
 
         def eventSaveWorkspace( self ):
-            self.consoleInput('Input name to save Workspace >> ', self.onSaveWorkspaceName )
-        def onSaveWorkspaceName( self, filename ):
+            self.consoleInput('Input name to save Workspace >> ', self.onSaveWorkspaceFileName )
+        def onSaveWorkspaceFileName( self, filename ):
             if filename:
-                saving.save( self, filename )
+                saving.save_to_file( self, filename )
+    
+    if config.IS_WEB_PLATFORM:  # Save to/Load from localStorage
+        
+        def onSaveWorkspaceName( self, workspaceName ):
+            xmlData = saving.save( self, pretty = True )
+            if xmlData:
+                key = "workspace_%s" % workspaceName
+                localstorage.save_value(key, xmlData)
+            
+        def onLoadWorkspaceName( self, workspaceName ):
+            key = "workspace_%s" % workspaceName
+            xmlData = localstorage.load_value(key)
+            if xmlData and saving.load( self, xmlData ):
+                self.invalidate()
 
 
     def eventSaveScreen( self ):

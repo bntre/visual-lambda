@@ -12,7 +12,8 @@ from    vector      import  Vector
 import  refnames
 
 
-def save( manipulator, filename ):
+
+def save( manipulator, pretty = False ):
 
     doc = minidom.Document()
     workspace = doc.createElement("workspace")
@@ -40,27 +41,19 @@ def save( manipulator, filename ):
 
         items.appendChild( item )
 
-    filepath = os.path.join('workspaces', filename )
+    if pretty:
+        return doc.toprettyxml(indent=' ', newl='\n')
+    else:
+        return doc.toxml()
+
+
+
+def load( manipulator, xmlData ):
+
     try:
-        f = open( filepath, "w" )
-        doc.writexml( f, addindent=' ', newl='\n' )
-        f.close()
+        dom = minidom.parseString( xmlData )
     except:
-        print("Error. Can't write to", filepath)
-        return False
-
-    debug('save', 'saved to', filename )
-    return True
-    
-
-    
-def load( manipulator, filename ):
-
-    filepath = os.path.join('workspaces', filename )
-    try:
-        dom = minidom.parse( filepath )
-    except IOError:
-        print("Error. Can't read", filepath)
+        print("Error. Can't parse workspace xml")
         return False
 
     manipulator.items = []
@@ -82,8 +75,45 @@ def load( manipulator, filename ):
 
     refnames.reset()
 
-    debug('save', 'loaded from', filename )
-    
     return True
 
-        
+
+
+def save_to_file( manipulator, filename ):
+    xml = save( manipulator, pretty = True )
+    if not xml:
+        return False
+    
+    filepath = os.path.join('workspaces', filename )
+    with open( filepath, "w" ) as f:
+        f.write(xml)
+        f.close()
+        debug('save', 'saved to', filename )
+        return True
+    
+    print("Error. Can't write to", filepath)
+    return False
+
+
+
+def load_from_file( manipulator, filename ):
+    filepath = os.path.join('workspaces', filename )
+    
+    xmlData = None
+    with open( filepath, "r" ) as f:
+        xmlData = f.read()
+        f.close()
+    
+    print(xmlData)
+    
+    if not xmlData:
+        print("Error. Can't read (or empty)", filepath)
+        return False
+
+    
+    if load( manipulator, xmlData ):
+        debug('save', 'loaded from', filename )
+        return True
+    
+    return False
+

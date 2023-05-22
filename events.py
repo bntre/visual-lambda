@@ -20,6 +20,11 @@ ENDURINGEVENT   = pygame.USEREVENT + 3
 ONPAINTEVENT    = pygame.USEREVENT + 4
 
 
+SYSTEMCONSOLE_TIMEREVENT = pygame.USEREVENT + 5
+
+
+LOCALSTORAGE_TIMEREVENT = pygame.USEREVENT + 6
+
 
 
 class Enduring:      # ?? move class to another module

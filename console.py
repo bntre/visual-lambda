@@ -1,6 +1,6 @@
 
-# Calling input() in separate thread to avoid freezing
-
+# Calling input() in separate thread to avoid freezing.
+# Not used on web platform.
 
 import threading
 
