@@ -88,7 +88,7 @@ def save_to_file( manipulator, filename ):
     with open( filepath, "w" ) as f:
         f.write(xml)
         f.close()
-        debug('save', 'saved to', filename )
+        debug('save', 'Workspace saved to', filename )
         return True
     
     print("Error. Can't write to", filepath)
@@ -112,7 +112,7 @@ def load_from_file( manipulator, filename ):
 
     
     if load( manipulator, xmlData ):
-        debug('save', 'loaded from', filename )
+        debug('save', 'Workspace loaded from', filename )
         return True
     
     return False

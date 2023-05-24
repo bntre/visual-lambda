@@ -14,7 +14,7 @@ class Window:
     def __init__( self, caption, size ):
 
         pygame.init()
-        self.size = size     # Size of window for Y-coordinate reorientation
+        self.size = size     # tuple, size of window in pixels
         pygame.display.set_mode( self.size, pygame.RESIZABLE )  
         self.window = pygame.display.get_surface()  # main surface
         

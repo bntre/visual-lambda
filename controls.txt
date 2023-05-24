@@ -27,7 +27,8 @@ Items
     Add Free Variable                   V
 
 
-Zoom View                               Mouse Wheel
+Zoom View                               Mouse Wheel, +/-
+Move View                               Middle mouse button
 Refresh View                            F5
 
 

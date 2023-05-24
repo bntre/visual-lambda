@@ -157,12 +157,13 @@ class Manipulator( Window ):
 
         self.viewMatrix = None
         self.viewMatrix = self.defaultView( self.size, 35 )
+        self.viewMovePos = None            # Start position of dragging the View
 
 
         self.selection = Selection( None )
         self.selectionChanged = True        # Used to update statusbar text
         self.highlight = Selection( None )  # Dragging Figure over another Figure
-        self.dragPos   = None               # Start drag position
+        self.dragPos   = None               # Start position of dragging an Item
 
 
         self.mode = let.Mode()              # Mode of reduction
@@ -217,6 +218,11 @@ class Manipulator( Window ):
             K_F1:           [ (0,           self.eventViewHelp) ],
             K_F5:           [ (0,           self.eventRefreshView) ],
             K_F12:          [ (0,           self.eventSaveScreen) ],
+            
+            K_PLUS:         [ (0,           self.zoomInView) ],
+            K_KP_PLUS:      [ (0,           self.zoomInView) ],
+            K_MINUS:        [ (0,           self.zoomOutView) ],
+            K_KP_MINUS:     [ (0,           self.zoomOutView) ],
         }
 
         #-----------------------------------------------------
@@ -256,8 +262,9 @@ class Manipulator( Window ):
                                                                            ' whole expression', ' in selection', lambda:self.mode.redex )
         if config.ALLOW_SYSTEM_CONSOLE:
           left.add( None, None, '' )
-          left.add( self.eventSaveWorkspace,        'Save Workspace. Input file name from console. (Ctrl+S)',  'Save' )
-          left.add( self.eventLoadWorkspace,        'Load Workspace. Input file name from console. (Ctrl+O)',  'Load' )
+          left.add( None, None, 'Workspace' )
+          left.add( self.eventSaveWorkspace,        'Save Workspace. Input file name from console. (Ctrl+S)',  ' Save' )
+          left.add( self.eventLoadWorkspace,        'Load Workspace. Input file name from console. (Ctrl+O)',  ' Load' )
         self.toolbars.append( left )
     
         right = toolbar.Toolbar( toolbar.RIGHT )
@@ -560,16 +567,30 @@ class Manipulator( Window ):
         return t * r
 
     
-    def zoomView( self, pos, button ):
+    def zoomView( self, pos, zoomIn = True ):
         
         t = TransformMatrix()
         t.setTranspose( pos.x, pos.y, 1 )
         
-        k = 1.35 ** ( 4==button and 1 or -1 )
+        k = 1.35 ** ( zoomIn and 1 or -1 )
         z = TransformMatrix()
         z.setTranspose( 0,0, k )
         
         self.viewMatrix = t * z * t.inverse() * self.viewMatrix
+        self.invalidate()
+
+    def zoomInView ( self ): self.zoomView( Vector2(self.size) / 2, True )
+    def zoomOutView( self ): self.zoomView( Vector2(self.size) / 2, False )
+
+
+    def moveView( self, shift ):
+        
+        t = TransformMatrix()
+        t.setTranspose( shift.x, shift.y, 1 )
+        
+        self.viewMatrix = t * self.viewMatrix
+        self.invalidate()
+    
 
     def updateSelectionStatus( self ):
         # Collect selection status lines
@@ -642,9 +663,8 @@ class Manipulator( Window ):
                 modCtrl = pygame.key.get_mods() & KMOD_CTRL
                 
                 if event.button in (4,5):   # Wheel UP or DOWN  -  Zoom
-                    if self.items:        # Don't zoom if no Figures
-                        self.zoomView( pos, event.button )
-                        self.invalidate()
+                    if self.items:          # Don't zoom if no Figures
+                        self.zoomView( pos, event.button == 4 )
                 
                 elif event.button == 1 and not modCtrl:  # Left Button (without Ctrl)
 
@@ -655,14 +675,14 @@ class Manipulator( Window ):
                             self.invalidate()
                     
                     else:
-                        if self.select( pos ):  # Select
-                            if self.quick:              # Try to reduce at once
+                        if self.select( pos ):     # Select (self.dragPos set there)
+                            if self.quick:         # Try to reduce at once
                                 self.eventReduce()
                             self.invalidate()
                         
                 
                 elif event.button == 3 or event.button == 1 and modCtrl:   # Right Button or Left Button with Ctrl
-                    if self.selection.figure(): # Try to Reref Selected Var or Abs
+                    if self.selection.figure():  # Try to Reref Selected Var or Abs
                         pick = self.pick( pos, figuresOnly= True )
                         if pick and pick.item == self.selection.item:
                             figure = pick.item
@@ -678,40 +698,47 @@ class Manipulator( Window ):
                                 figure.history.step( figure.expression.copy() )
                                 self.invalidate()
                         
+                elif event.button == 2:  # Middle Button - shift the View
+                    self.viewMovePos = pos
+                    
                 
 
             if MOUSEBUTTONUP == event.type: # End Drag
                 
-                # Dropping
-                if self.dragPos and self.selection.figure() and self.highlight.figure():
-                    #debug(2,'dropped',self.selection.item.expression,'-->',self.highlight.noke)
-                    dragged = self.selection.item
-                    
-                    construct.applicate( dragged.expression.expr, 
-                                         self.highlight.noke.node )
-                    
-                    self.items.remove( dragged )
-                    
-                    new = self.highlight.item
+                # Dropping an Item
+                if self.dragPos:
+                    if self.selection.figure() and self.highlight.figure():
+                        #debug(2,'dropped',self.selection.item.expression,'-->',self.highlight.noke)
+                        dragged = self.selection.item
+                        
+                        construct.applicate( dragged.expression.expr, 
+                                             self.highlight.noke.node )
+                        
+                        self.items.remove( dragged )
+                        
+                        new = self.highlight.item
 
-                    new.history.step( new.expression.copy() )
+                        new.history.step( new.expression.copy() )
 
-                    new.detColorSpace()
-                    new.clean()
-                    new.buildGroups()
-                    new.buildGeometry()
-                    self.selection = Selection( new )
-                    self.selectionChanged = True
-                    self.highlight = Selection( None )
-                    self.invalidate()
+                        new.detColorSpace()
+                        new.clean()
+                        new.buildGroups()
+                        new.buildGeometry()
+                        self.selection = Selection( new )
+                        self.selectionChanged = True
+                        self.highlight = Selection( None )
+                        self.invalidate()
                     
+                    self.dragPos = None
                 
-                self.dragPos = None
+                # Dropping the View
+                if event.button == 2:
+                    self.viewMovePos = None
     
     
             elif MOUSEMOTION == event.type:
                 
-                redraw = None
+                redraw = False
                 
                 # Highlight Nokes at dragging
                 if self.dragPos:
@@ -736,6 +763,12 @@ class Manipulator( Window ):
                             self.selectionChanged = True  # Restore selection text to statusbar
                         redraw = True
 
+                # Dragging the View
+                if self.viewMovePos and event.buttons[1]:
+                    shift = Vector2(event.pos) - Vector2(self.viewMovePos)
+                    self.viewMovePos = event.pos
+                    self.moveView( shift )
+
                 if redraw:
                     self.invalidate()
     
@@ -756,7 +789,6 @@ class Manipulator( Window ):
             for e in event.data.handler():
                 self.postEvent( e )
             self.invalidate()
-        
        
         if config.IS_WEB_PLATFORM:
             if event.type == LOCALSTORAGE_TIMEREVENT:
@@ -778,13 +810,13 @@ class Manipulator( Window ):
 
     if config.ALLOW_SYSTEM_CONSOLE:
         def eventInputItem( self ):
-            self.consoleInput('Input Expression to add >> ', self.onInputItem)
+            self.consoleInput('Input Text (quoted) or Expression to add >> ', self.onInputItem)
             
     def onInputItem( self, expression ):
         # expression got from system console or from localStorage exchange
         if expression:
             if expression[0] in ('"',"'"):
-                item = TextItem( eval(expression) )
+                item = TextItem( expression.strip("\"'") )
             else:
                 item = Figure( expression )
     
@@ -928,15 +960,15 @@ class Manipulator( Window ):
     
         def eventLoadWorkspace( self ):
             self.consoleInput('Input name of Workspace to load >> ', self.onLoadWorkspaceFileName )
-        def onLoadWorkspaceFileName( self, filename ):
-            if filename and saving.load_from_file( self, filename ):
+        def onLoadWorkspaceFileName( self, workspaceName ):
+            if workspaceName and saving.load_from_file( self, workspaceName + ".xml" ):
                 self.invalidate()
 
         def eventSaveWorkspace( self ):
             self.consoleInput('Input name to save Workspace >> ', self.onSaveWorkspaceFileName )
-        def onSaveWorkspaceFileName( self, filename ):
-            if filename:
-                saving.save_to_file( self, filename )
+        def onSaveWorkspaceFileName( self, workspaceName ):
+            if workspaceName:
+                saving.save_to_file( self, workspaceName + ".xml" )
     
     if config.IS_WEB_PLATFORM:  # Save to/Load from localStorage
         
@@ -967,7 +999,7 @@ class Manipulator( Window ):
                     item.buildGeometry()            
             self.invalidate()
             refnames.reset()    # Reset refnames here too
-                                    
+
 
     def eventViewHelp( self ):
         self.showInfo ^= True
