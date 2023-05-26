@@ -158,6 +158,7 @@ class Manipulator( Window ):
         self.viewMatrix = None
         self.viewMatrix = self.defaultView( self.size, 35 )
         self.viewMovePos = None            # Start position of dragging the View
+        self.viewMatrixSaved = None  #!!! temporal ?
 
 
         self.selection = Selection( None )
@@ -180,6 +181,7 @@ class Manipulator( Window ):
         # Drawing 
         self.boldLambda = int( config.get( 'bold_lambda', 0 ) )
 
+
         self.keyEventProcs = {
             K_i:            [ (0,           config.ALLOW_SYSTEM_CONSOLE and self.eventInputItem) ],
             K_d:            [ (0,           self.eventDeleteItem) ],
@@ -191,8 +193,12 @@ class Manipulator( Window ):
             K_BACKSPACE:    [ (0,           self.eventUndo) ],
             K_z:            [ (KMOD_CTRL,   self.eventUndo) ],
             K_y:            [ (KMOD_CTRL,   self.eventRedo) ],
-            K_LEFT:         [ (KMOD_ALT,    self.eventUndo) ],
-            K_RIGHT:        [ (KMOD_ALT,    self.eventRedo) ],
+            K_LEFT:         [ (KMOD_ALT,    self.eventUndo),
+                              (0,           lambda: self.moveView( 50, 0)) ],  # Scrolling the View
+            K_RIGHT:        [ (KMOD_ALT,    self.eventRedo),
+                              (0,           lambda: self.moveView(-50, 0)) ],
+            K_UP:           [ (0,           lambda: self.moveView( 0, 50)) ],
+            K_DOWN:         [ (0,           lambda: self.moveView( 0,-50)) ],
             
             K_SPACE:        [ (0,           self.eventExpandSelection) ],
             K_DELETE:       [ (0,           self.eventDeleteNode) ],
@@ -223,7 +229,14 @@ class Manipulator( Window ):
             K_KP_PLUS:      [ (0,           self.zoomInView) ],
             K_MINUS:        [ (0,           self.zoomOutView) ],
             K_KP_MINUS:     [ (0,           self.zoomOutView) ],
+            
+            #!!! temporal
+            K_F6: [ (0, lambda: saving.load_from_file(self, config.get('workspace')) and self.invalidate()) ], # Reload the Workspace
+            K_F7: [ (0, self.saveView) ],
+            K_F8: [ (0, self.restoreView) ],
         }
+        
+        pygame.key.set_repeat(1000, 50)  # Good for scrolling the View
 
         #-----------------------------------------------------
 
@@ -572,7 +585,7 @@ class Manipulator( Window ):
         t = TransformMatrix()
         t.setTranspose( pos.x, pos.y, 1 )
         
-        k = 1.35 ** ( zoomIn and 1 or -1 )
+        k = 1.11 ** ( zoomIn and 1 or -1 )
         z = TransformMatrix()
         z.setTranspose( 0,0, k )
         
@@ -583,13 +596,23 @@ class Manipulator( Window ):
     def zoomOutView( self ): self.zoomView( Vector2(self.size) / 2, False )
 
 
-    def moveView( self, shift ):
+    def moveView( self, shiftX, shiftY ):
         
         t = TransformMatrix()
-        t.setTranspose( shift.x, shift.y, 1 )
+        t.setTranspose( shiftX, shiftY, 1 )
         
         self.viewMatrix = t * self.viewMatrix
         self.invalidate()
+    
+    
+    #!!! temporal ?
+    def saveView( self ):
+        self.viewMatrixSaved = self.viewMatrix.copy()
+        print("The View was saved")
+    def restoreView( self ):
+        self.viewMatrix = self.viewMatrixSaved
+        self.invalidate()
+        print("The View was restored")
     
 
     def updateSelectionStatus( self ):
@@ -767,7 +790,7 @@ class Manipulator( Window ):
                 if self.viewMovePos and event.buttons[1]:
                     shift = Vector2(event.pos) - Vector2(self.viewMovePos)
                     self.viewMovePos = event.pos
-                    self.moveView( shift )
+                    self.moveView( shift.x, shift.y )
 
                 if redraw:
                     self.invalidate()
@@ -792,8 +815,8 @@ class Manipulator( Window ):
        
         if config.IS_WEB_PLATFORM:
             if event.type == LOCALSTORAGE_TIMEREVENT:
-                # Check if user has called a browser console command, e.g. inputItem('\\x. x x')
-                localstorage.handle_storage('inputItem', self.onInputItem, "|")
+                # Check if user has called a browser console command, e.g. addItem('\\x. x x')
+                localstorage.handle_storage('addItem', self.onInputItem, "|")
                 localstorage.handle_storage('saveWorkspace', self.onSaveWorkspaceName)
                 localstorage.handle_storage('loadWorkspace', self.onLoadWorkspaceName)
         
@@ -997,8 +1020,9 @@ class Manipulator( Window ):
                     item.detColorSpace()
                     item.buildGroups()
                     item.buildGeometry()            
-            self.invalidate()
             refnames.reset()    # Reset refnames here too
+            self.selectionChanged = True
+            self.invalidate()
 
 
     def eventViewHelp( self ):
@@ -1252,7 +1276,7 @@ class Manipulator( Window ):
         figure.buildGeometry()
         
         # Check Selection (it may be broken after Garbage)
-        if self.selection and not self.selection.noke():
+        if self.selection and self.selection.figure() and not self.selection.noke():
             self.selection.noke.key = ()
         
         # Step of History

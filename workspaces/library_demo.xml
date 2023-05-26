@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<workspace>
+ <label name="Visual Lambda Library Demo" />
+ <items>
+                                                        <item pos="5,8" text="NOTATION" origin="1" />
+
+  <item pos="-6,-3" figure="f x" />                 <item pos="-2,-3" text="f x" />
+  <item pos="-6,-6" figure="f x y" />               <item pos="-2,-6" text="f x y" />
+  <item pos="-6,-9" figure="f (g x)" />             <item pos="-2,-9" text="f (g x)" />
+  
+  <item pos="-6,-13" figure="\x. f x x" />          <item pos="-2,-13" text="\x. f x x" />
+  
+  <item pos="-6,-18" figure="(\f x. f x x) (\z. z z)" />    <item pos="-2,-18" text="(\f x. f x x) (\z. z z)" />
+
+
+
+                                                        <item pos="0,-24" text="LOGIC" origin="1" />
+  
+  <item pos="-6,-4" figure="\x y. x" />             <item pos="-2,-4" text="T = \x y. x" />
+  <item pos="-6,-8" figure="\x y. y" />             <item pos="-2,-8" text="F = \x y. y" />
+  
+  <item pos="-6,-13" figure="\p. p F T" />          <item pos="-2,-13" text="NOT = \p. p F T" />
+  <item pos="-6,-20" figure="\p q. p q F" />        <item pos="-2,-20" text="AND = \p q. p q F" />
+  <item pos="-6,-27" figure="\p q. p T q" />        <item pos="-2,-27" text="OR = \p q. p T q" />
+  <item pos="-6,-34" figure="\p x y. p x y" />      <item pos="-2,-34" text="COND = \p x y. p x y" />
+
+
+
+                                                        <item pos="0,-42" text="PAIRS" origin="1" />
+  
+  <item pos="-6,-4"  figure="\f. f a b" />          <item pos="-2,-4"  text="(A, B) = \f. f A B" />
+  <item pos="-6,-11" figure="\p. p T" />            <item pos="-2,-11" text="FST = \p. p T" />
+  <item pos="-6,-18" figure="\p. p F" />            <item pos="-2,-18" text="SND = \p. p F" />
+  <item pos="-6,-25" figure="\a b f. f a b" />      <item pos="-2,-25" text="PAIR/, = \a b f. f a b" />
+
+
+
+                                                        <item pos="0,-33" text="ARITHMETIC" origin="1" />
+                                            
+  <item pos="-8,-4"  figure="\f x. x" />            <item pos="-2,-4"  text="0 = \f x. x" />
+  <item pos="-8,-9"  figure="\f x. f x" />          <item pos="-2,-9"  text="1 = \f x. f x" />
+  <item pos="-8,-16" figure="\f x. f (f x)" />      <item pos="-2,-16" text="2 = \f x. f (f x)" />
+  <item pos="-8,-25" figure="\f x. f (f (f x))" />  <item pos="-2,-25" text="3 = \f x. f (f (f x))" />
+  <item pos="-8,-36" figure="\f x. f (f (f (f x)))" />
+  <item pos="5,-36"  figure="\f x. f (f (f (f (f x))))" />
+  <item pos="20,-36" figure="\f x. f (f (f (f (f (f x)))))" />
+  
+  <item pos="-8,-47" figure="\n. n (\x. F) T" />                        <item pos="-2,-47" text="ISZERO = \n. n (\x. F) T" />
+  <item pos="-8,-56" figure="\n f x. f (n f x)" />                      <item pos="-2,-56" text="SUCC = \n f x. f (n f x)" />
+  <item pos="-8,-67" figure="\m n f x. n f (m f x)" />                  <item pos="-2,-67" text="PLUS/+ = \m n f x. n f (m f x)" />
+  <item pos="-8,-77" figure="\m n f. m (n f)" />                        <item pos="-2,-77" text="MULT/* = \m n f. m (n f)" />
+  <item pos="-8,-85" figure="\m n. n m" />                              <item pos="-2,-85" text="POW = \m n. n m" />
+  <item pos="-8,-97" figure="\n f x. n (\g h. h (g f)) (\u. x) I" />    <item pos="2,-97"  text="PRED = \n f x. n (\g h. h (g f)) (\u. x) I" />
+
+
+
+                                                        <item pos="0,-111" text="COMBINATORS" origin="1" />
+  
+  <item pos="-6,-4" figure="\x. x" />               <item pos="-2,-4"  text="I = \x. x" />
+  <item pos="-6,-7" figure="\x y. x" />             <item pos="-2,-7"  text="K = \x y. x" />
+  <item pos="-6,-14" figure="\x y z. x z (y z)" />  <item pos="-2,-10"  text="S = \x y z. x z (y z)" />
+                                                            <item pos="3,-14"  text="SKK = I" />
+
+  <item pos="-6,-26" figure="\f. (\x. f (x x)) (\x. f (x x))" />          <item pos="0,-26"  text="Y = \f. (\x. f (x x)) (\x. f (x x))" />
+  <item pos="-6,-34" figure="(\x y. y (x x y)) (\x y. y (x x y))" />      <item pos="0,-34"  text="O = (\x y. y (x x y)) (\x y. y (x x y))" />
+
+  <item pos="-6,-40" figure="(\x. x x) (\x. x x)" />                      <item pos="0,-40"  text="LOOP = (\x. x x) (\x. x x)" />
+
+  
+ </items>
+</workspace>

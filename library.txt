@@ -6,12 +6,10 @@ I = \x. x
 K = \x y. x
 S = \x y z. x z (y z)
 
-W = \x. x x
-Y = \f.(\x. f (x x)) (\x. f (x x))
-OO = (\x y. y (x x y))
-     (\x y. y (x x y))
+Y = \f. (\x. f (x x)) (\x. f (x x))
+O = (\x y. y (x x y)) (\x y. y (x x y))
 
-LOOP = W W
+LOOP = (\x. x x) (\x. x x)
 
 
 # Logic

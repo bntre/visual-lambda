@@ -55,8 +55,9 @@ def load( manipulator, xmlData ):
     except:
         print("Error. Can't parse workspace xml")
         return False
-
+    
     manipulator.items = []
+    lastOrigin = Vector((0, 0))
     for item in dom.getElementsByTagName('item'):
         
         i = None
@@ -67,9 +68,13 @@ def load( manipulator, xmlData ):
 
         pos = item.getAttribute('pos').split(',')
         pos = tuple(map( float, pos ))
+        pos = lastOrigin + Vector(pos)
         i.position.setTranspose( pos[0],pos[1], 1 )
         i.refreshTransform()
         manipulator.items.append( i )
+        
+        if item.hasAttribute('origin'):
+            lastOrigin = pos
     
     dom.unlink()
 
@@ -103,8 +108,6 @@ def load_from_file( manipulator, filename ):
     with open( filepath, "r" ) as f:
         xmlData = f.read()
         f.close()
-    
-    print(xmlData)
     
     if not xmlData:
         print("Error. Can't read (or empty)", filepath)
