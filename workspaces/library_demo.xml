@@ -66,6 +66,11 @@
 
   <item pos="-6,-40" figure="(\x. x x) (\x. x x)" />                      <item pos="0,-40"  text="LOOP = (\x. x x) (\x. x x)" />
 
+
+
+                                                        <item pos="0,-52" text="FACTORIAL" origin="1" />
+                                                        
+  <item pos="-8,-12" figure="FACT" />                <item pos="3,-6" text="FACT = Y (\f n. (ISZERO n) 1 (MULT (f (PRED n)) n))" />
   
  </items>
 </workspace>

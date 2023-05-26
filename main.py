@@ -301,6 +301,10 @@ class Manipulator( Window ):
 
 
     async def run( self ):
+        
+        sleepSec = 0.02
+        if config.IS_WEB_PLATFORM:
+            sleepSec = 0  # pygbag asked for 0
     
         while True:
         
@@ -309,7 +313,7 @@ class Manipulator( Window ):
                 if e.type == pygame.QUIT:
                     return
             
-            await asyncio.sleep(0)
+            await asyncio.sleep(sleepSec)
             
 
 
@@ -610,9 +614,10 @@ class Manipulator( Window ):
         self.viewMatrixSaved = self.viewMatrix.copy()
         print("The View was saved")
     def restoreView( self ):
-        self.viewMatrix = self.viewMatrixSaved
-        self.invalidate()
-        print("The View was restored")
+        if self.viewMatrixSaved:
+            self.viewMatrix = self.viewMatrixSaved
+            self.invalidate()
+            print("The View was restored")
     
 
     def updateSelectionStatus( self ):
@@ -817,6 +822,7 @@ class Manipulator( Window ):
             if event.type == LOCALSTORAGE_TIMEREVENT:
                 # Check if user has called a browser console command, e.g. addItem('\\x. x x')
                 localstorage.handle_storage('addItem', self.onInputItem, "|")
+                localstorage.handle_storage('clearWorkspace', self.onClearWorkspace)
                 localstorage.handle_storage('saveWorkspace', self.onSaveWorkspaceName)
                 localstorage.handle_storage('loadWorkspace', self.onLoadWorkspaceName)
         
@@ -994,6 +1000,10 @@ class Manipulator( Window ):
                 saving.save_to_file( self, workspaceName + ".xml" )
     
     if config.IS_WEB_PLATFORM:  # Save to/Load from localStorage
+        
+        def onClearWorkspace( self, _ ):
+            if saving.load_from_file( self, "clear.xml" ):
+                self.invalidate()
         
         def onSaveWorkspaceName( self, workspaceName ):
             xmlData = saving.save( self, pretty = True )

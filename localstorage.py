@@ -25,6 +25,9 @@ r"""
     function addItem(expression) {
         setStorageValue("addItem", expression, "|");
     }
+    function clearWorkspace() {
+        setStorageValue("clearWorkspace", "1");
+    }
     function saveWorkspace(workspaceName) {
         setStorageValue("saveWorkspace", workspaceName);
     }
@@ -33,6 +36,7 @@ r"""
     }
     function help() {
         console.log("addItem(expression) - add an item by expression, e.g. addItem('\\x. x x')");
+        console.log("clearWorkspace() - clear the workspace");
         console.log("saveWorkspace(workspaceName) - save current workspace to localStorage, e.g. saveWorkspace('combinators3')");
         console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
     }
