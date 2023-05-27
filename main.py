@@ -219,11 +219,11 @@ class Manipulator( Window ):
             K_v:            [ (0,           self.eventAddVariable) ],
             K_p:            [ (KMOD_ALT,    self.eventModeLazy) ],
 
-            K_e:            [ (KMOD_ALT,    self.eventExportMode) ],
+            K_e:            [ (KMOD_ALT,    config.ALLOW_FILE_WRITING and self.eventExportMode) ],
             
             K_F1:           [ (0,           self.eventViewHelp) ],
             K_F5:           [ (0,           self.eventRefreshView) ],
-            K_F12:          [ (0,           self.eventSaveScreen) ],
+            K_F12:          [ (0,           config.ALLOW_FILE_WRITING and self.eventSaveScreen) ],
             
             K_PLUS:         [ (0,           self.zoomInView) ],
             K_KP_PLUS:      [ (0,           self.zoomInView) ],
@@ -655,12 +655,13 @@ class Manipulator( Window ):
         surface = self.getSurface()
         
         # Export Frame as bitmap
-        if Enduring.exportMode:
-            filename = 'frame_%s_%05d.png' % ( strDate(), Enduring.exportModeFrame )
-            Enduring.exportModeFrame += 1
-            
-            pygame.image.save( surface, filename )
-            debug(1, 'Frame saved:', filename )
+        if config.ALLOW_FILE_WRITING:
+            if Enduring.exportMode:
+                filename = 'frame_%s_%05d.png' % ( strDate(), Enduring.exportModeFrame )
+                Enduring.exportModeFrame += 1
+                
+                pygame.image.save( surface, filename )
+                debug(1, 'Frame saved:', filename )
 
         # Draw Toolbars
         for t in self.toolbars:
@@ -1018,8 +1019,9 @@ class Manipulator( Window ):
                 self.invalidate()
 
 
-    def eventSaveScreen( self ):
-        pygame.image.save( self.getSurface(), 'screen_%s.bmp' % strDate() )
+    if config.ALLOW_FILE_WRITING:
+        def eventSaveScreen( self ):
+            pygame.image.save( self.getSurface(), 'screen_%s.png' % strDate() )
 
 
     def eventRefreshView( self ):
@@ -1061,10 +1063,10 @@ class Manipulator( Window ):
         self.invalidate()
 
 
-
-    def eventExportMode( self ):
-        Enduring.exportMode ^= True
-        debug( 1, "Export Mode:", Enduring.exportMode )
+    if config.ALLOW_FILE_WRITING:
+        def eventExportMode( self ):
+            Enduring.exportMode ^= True
+            debug( 1, "Export Mode:", Enduring.exportMode )
 
 
 

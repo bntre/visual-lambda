@@ -511,6 +511,25 @@ frameborder="1"
         console.log("saveWorkspace(workspaceName) - save current workspace to localStorage, e.g. saveWorkspace('combinators3')");
         console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
     }
+
+    window.addEventListener('message', event => {
+        //console.log(event);
+        if (event.origin !== "https://bntr.itch.io") return;
+        const method = event.data[0];
+        if (method === "addItem") {
+            addItem(event.data[1]);
+        } else if (method === "v") {
+            clearWorkspace();
+        } else if (method === "saveWorkspace") {
+            saveWorkspace(event.data[1])
+        } else if (method === "loadWorkspace") {
+            loadWorkspace(event.data[1]);
+        }
+    });
+    // Use on itch.io in browser console:
+    //> var w = document.getElementById("game_drop").contentWindow;
+    //> w.postMessage(['addItem','\\x.x x'], '*')
+    //> w.postMessage(['clearWorkspace'], '*')
     
     </script>
 

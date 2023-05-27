@@ -3,44 +3,7 @@
 
 # https://github.com/pygame-web/pygame-web.github.io/blob/main/wiki/pygbag-code/README.md
 
-# Add this to index.html:
-r"""
-    // localStorage exchange
-    function setStorageValue(name, newValue, separator = undefined) {
-        let key = "storage_" + name;
-        let value = undefined;
-        if (separator) {
-            value = window.localStorage.getItem(key);
-            if (value) {
-                value += separator + newValue;
-            } else {
-                value = newValue;
-            }
-        } else {
-            value = newValue;
-        }
-        window.localStorage.setItem(key, value);
-    }
-    
-    function addItem(expression) {
-        setStorageValue("addItem", expression, "|");
-    }
-    function clearWorkspace() {
-        setStorageValue("clearWorkspace", "1");
-    }
-    function saveWorkspace(workspaceName) {
-        setStorageValue("saveWorkspace", workspaceName);
-    }
-    function loadWorkspace(workspaceName) {
-        setStorageValue("loadWorkspace", workspaceName);
-    }
-    function help() {
-        console.log("addItem(expression) - add an item by expression, e.g. addItem('\\x. x x')");
-        console.log("clearWorkspace() - clear the workspace");
-        console.log("saveWorkspace(workspaceName) - save current workspace to localStorage, e.g. saveWorkspace('combinators3')");
-        console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
-    }
-"""
+# See the writing to localStorage in pygbag_index_html.tmpl
 
 
 import config

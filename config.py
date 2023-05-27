@@ -11,6 +11,8 @@ IS_WEB_PLATFORM = sys.platform == 'emscripten'
 
 ALLOW_SYSTEM_CONSOLE = not IS_WEB_PLATFORM
 
+ALLOW_FILE_WRITING = not IS_WEB_PLATFORM
+
 
 #-----------------------------------------------
 # Config file

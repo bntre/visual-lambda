@@ -1,11 +1,4 @@
 
-Run:
-
-python manipulator.py
-
-
-
-
 --------------------------------------------------------
 Controls
 
@@ -79,5 +72,5 @@ Zoom                                    Wheel
 
 
 
-Save screen to bmp                      F12
+Save screen to png                      F12
 Mode of export frames                   Alt+E
