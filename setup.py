@@ -7,5 +7,5 @@ import  py2exe
 
 
 
-setup( console=['manipulator.py'] )
+setup( console=['main.py'] )
 

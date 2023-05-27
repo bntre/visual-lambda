@@ -16,4 +16,4 @@ xcopy workspaces\library_demo.xml %DEST%\workspaces\
 xcopy workspaces\clear.xml %DEST%\workspaces\
 
 
-python -m pygbag --app_name VisualLambda --package bntr.visuallambda --title "Visual Lambda" %DEST%
+python -m pygbag --app_name VisualLambda --package bntr.visuallambda --title "Visual Lambda" --template pygbag_index_html.tmpl --icon favicon.png %DEST%
