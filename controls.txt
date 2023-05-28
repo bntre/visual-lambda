@@ -7,7 +7,7 @@ Controls
 Items
     Input from console                  I
         Examples:
-            >> \\x y. (\\x. x)
+            >> \x y. (\x. x)
             >> FACT 3                   (see library.txt)
             >> "Label"
     
@@ -21,7 +21,7 @@ Items
 
 
 Zoom View                               Mouse Wheel, +/-
-Move View                               Middle mouse button
+Move View                               Middle mouse button, Arrows
 Refresh View                            F5
 
 

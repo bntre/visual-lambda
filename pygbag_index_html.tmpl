@@ -512,13 +512,14 @@ frameborder="1"
         console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
     }
 
+    // Allow using browser console through an iframe on itch.io
     window.addEventListener('message', event => {
         //console.log(event);
         if (event.origin !== "https://bntr.itch.io") return;
         const method = event.data[0];
         if (method === "addItem") {
             addItem(event.data[1]);
-        } else if (method === "v") {
+        } else if (method === "clearWorkspace") {
             clearWorkspace();
         } else if (method === "saveWorkspace") {
             saveWorkspace(event.data[1])
@@ -526,10 +527,13 @@ frameborder="1"
             loadWorkspace(event.data[1]);
         }
     });
-    // Use on itch.io in browser console:
-    //> var w = document.getElementById("game_drop").contentWindow;
-    //> w.postMessage(['addItem','\\x.x x'], '*')
-    //> w.postMessage(['clearWorkspace'], '*')
+    
+    // Then in browser console:
+    //> function vl(...args) { document.getElementById("game_drop").contentWindow.postMessage(args, "*") }
+    //> vl('addItem','MULT 2 (\\f x. f (f x))')
+    //> vl('clearWorkspace')
+    //> vl('saveWorkspace', 'combinators3')
+    //> vl('loadWorkspace', 'combinators3')
     
     </script>
 

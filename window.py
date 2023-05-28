@@ -23,7 +23,7 @@ class Window:
         
         fontsize = int( config.get( 'fontsize' ) )  or  11
         if config.IS_WEB_PLATFORM: 
-            fontsize = fontsize * 3//2  #!!! fixing pygbag
+            fontsize = fontsize * 2  #!!! fixing pygbag
         self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
         self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
 

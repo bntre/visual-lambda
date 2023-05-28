@@ -1,22 +1,24 @@
-Project moved from https://code.google.com/archive/p/visual-lambda/  
-and from https://bitbucket.org/bntr/visual-lambda too.
+<sub>The project has been moved from https://code.google.com/archive/p/visual-lambda/ and from https://bitbucket.org/bntr/visual-lambda as well.</sub>
 
 # Visual Lambda Calculus
 
-![logo](http://bntr.planet.ee/lambda/loop_.gif)
+![logo](https://bntr.planet.ee/lambda/loop_.gif)
 
 The Visual Lambda environment enables intuitive manipulation of lambda calculus expressions.
 
 ![](https://raw.githubusercontent.com/bntre/visual-lambda/master/screenshot.png)
 
-## Notation
-- [Basics](http://bntr.planet.ee/lambda/visual_lambda_bubble_notation.gif)
-- More detailed in this thesis: [visual_lambda.pdf](http://bntr.planet.ee/lambda/work/visual_lambda.pdf)
+Also available online at: [https://bntr.itch.io/visual-lambda](https://bntr.itch.io/visual-lambda)
 
-## Reduction animation examples
-- ['MULT 3 2' evaluation](http://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif)
-- ['((λgm.m(gg))(λgm.m(gg)))M' building and evaluation](http://bntr.planet.ee/lambda/lambda_F_anim.gif)
-- ['Y I' evaluation](http://bntr.planet.ee/lambda/Y_I.gif)
+## Notation
+- [Basics](https://bntr.planet.ee/lambda/visual_lambda_bubble_notation.gif)
+- More detailed in this thesis: [visual_lambda.pdf](https://bntr.planet.ee/lambda/work/visual_lambda.pdf)
+
+## Examples
+- Pairs, construction, reduction: [https://www.youtube.com/watch?v=YEyyyzUuUJQ](https://www.youtube.com/watch?v=YEyyyzUuUJQ)
+- ['MULT 3 2' evaluation](https://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif) (gif)
+- ['((λgm.m(gg))(λgm.m(gg)))M' building and evaluation](https://bntr.planet.ee/lambda/lambda_F_anim.gif) (gif)
+- ['Y I' evaluation](https://bntr.planet.ee/lambda/Y_I.gif) (gif)
 
 
 ## Dependencies
