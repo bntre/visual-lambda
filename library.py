@@ -1,4 +1,6 @@
-
+r"""
+The Parser owns (and initializes) the Library object.
+"""
 
 from    debug       import  *
 
@@ -9,78 +11,73 @@ import  let
 import  config
 
 
+def strip( expr ):
+    return expr.strip(' \t\n\r')
+
 
 class Library:
 
-    def __init__( self ):
-        
-        self.dict = {}
-        
-        self.numbers = True     # Simulate numbers in library
-        
-        
-    
-    def __setitem__( self, key, value ):
-        self.dict[ key ] = isinstance( value, let.Expression )  \
-                               and value  \
-                               or  self.parser.parse( value )
-
-    def __getitem__( self, key ):
-
-        if key in self.dict:
-            #return copy.deepcopy( self.dict[ key ] )
-            debug( 4, 'library. asked', key, self.dict[ key ] )
-            return self.dict[ key ].copy( ({},{}) )
-
-        elif self.numbers and key.isdigit():
-            return self.number( int( key ) )
-
-        else:
-            raise KeyError(key)
-
-        
-    def __iter__( self ):
-        return self.dict.__iter__()
-
-
-    
-    def init( self, parser ):
-    
+    def __init__( self, parser ):
         self.parser = parser
-        
-        def getDefs( lines, spaces ):
 
-            def strip( s ):
-                return s.strip( spaces )
-            
-            while lines:
-                line = strip( lines.pop(0) )
-                
-                while  lines  and  lines[0]  and  lines[0][0] in spaces:
-                    next = strip( lines.pop(0) )
-                    if next: line += ' ' + next
-                
-                if line and not '#'==line[0]:
-                    yield list(map( strip, line.split('=',1) ))
-            
-        
+        self.globalItems = {}  # loaded from (e.g.) "library.txt" always available
+        self.localItems  = {}  # loaded from workspace; reset on workspace reload
 
+        self.generateNumbers = True     # Generate numbers by demand
+    
+    
+    def add_item( self, key, value, isGlobal = True ):
+        if not isinstance( value, let.Expression ):
+            value = self.parser.parse( value )
+        if isGlobal:
+            self.globalItems[ key ] = value
+        else:
+            self.localItems[ key ] = value
+
+
+    def reset_local_items( self ):
+        self.localItems  = {}
+
+
+    def add_line( self, line, isGlobal = True ):
+        line = strip(line)
+        if not line or line[0] == '#': return False
+        if '=' not in line: return False
+        key, value = tuple(map( strip, line.split('=', 1) ))
+        self.add_item( key, value, isGlobal )
+    
+        
+    def init( self ):
         # Read library from txt
-        txt = config.get( 'library', 'library.txt' )
+        libraryFile = config.get( 'library', 'library.txt' )
         try:
-            f = open( txt )
+            f = open( libraryFile, 'r' )
         except IOError:
-            print("Warning: no library found", txt)
+            print("Warning: can't open library file", libraryFile)
+            return
         else:
             lines = f.readlines()
             f.close()
         
-            for d in getDefs( lines, ' \t\n\r' ):
-                self[ d[0] ] = d[1]       # Add synonym to Library
+            for line in lines:
+                self.add_line( line, isGlobal = True )
         
-            
 
-    def number( self, n ):
+    def find_item( self, key ):
+        value = self.localItems.get( key ) or  \
+                self.globalItems.get( key )
+        if value:
+            debug( 4, 'library. asked', key, value )
+            return value.copy( ({},{}) )
+
+        elif self.generateNumbers and key.isdigit():
+            return self.generate_number( int( key ) )
+
+        else:
+            return None
+    
+    
+    def generate_number( self, n ):
         "Generates Number Expression"
         
         lf = let.Abstraction( expr= None )
@@ -88,7 +85,7 @@ class Library:
         
         x = let.Variable( lx )
 
-        for _ in range( n ):            
+        for _ in range( n ):
             f = let.Variable( lf )
             x = let.Application( func= f, arg= x )
 

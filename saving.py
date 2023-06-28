@@ -4,6 +4,7 @@ from    xml.dom     import  minidom
 
 from    debug       import  *
 
+from    lambdaparser import parser
 from    figure      import  Figure
 from    fielditem   import  TextItem
 
@@ -56,25 +57,35 @@ def load( manipulator, xmlData ):
         print("Error. Can't parse workspace xml")
         return False
     
+    # Reset library local defines
+    parser.lib.reset_local_items()
+    
+    # Load items
     manipulator.items = []
     lastOrigin = Vector((0, 0))
     for item in dom.getElementsByTagName('item'):
         
+        # Define
+        if item.hasAttribute('define'):
+            parser.lib.add_line( item.getAttribute('define'), isGlobal = False )
+            continue
+        
+        # Figure or Text item
         i = None
         if item.hasAttribute('figure'):
             i = Figure( item.getAttribute('figure') )
         elif item.hasAttribute('text'):
             i = TextItem( item.getAttribute('text') )
-
-        pos = item.getAttribute('pos').split(',')
-        pos = tuple(map( float, pos ))
-        pos = lastOrigin + Vector(pos)
-        i.position.setTranspose( pos[0],pos[1], 1 )
-        i.refreshTransform()
-        manipulator.items.append( i )
-        
-        if item.hasAttribute('origin'):
-            lastOrigin = pos
+        if i:
+            pos = item.getAttribute('pos').split(',')
+            pos = tuple(map( float, pos ))
+            pos = lastOrigin + Vector(pos)
+            i.position.setTranspose( pos[0],pos[1], 1 )
+            i.refreshTransform()
+            manipulator.items.append( i )
+            
+            if item.hasAttribute('origin'):
+                lastOrigin = pos
     
     dom.unlink()
 

@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<workspace>
+ <label name="Predecessors"/>
+ <items>
+ 
+  <item pos="0,8" text="PREDECESSORS" origin="1" />
+    <item pos="2,-2" text="Based on 'Many more predecessors: A representation workout'" />
+    <item pos="2.5,-3" text="by Oleg Kiselyov: https://okmij.org/ftp/Computation/pred.pdf" />
+
+    <item pos="-9,-10"  figure="\f x. f (f (f (f x)))" />
+    <item pos="2,-10"   figure="\f x. f (f (f x))" />
+    <item pos="11,-10"  figure="\f x. f (f x)" />
+    <item pos="18,-10"  figure="\f x. f x" />
+    <item pos="23,-10"  figure="\f x. x" />
+
+    <item pos="2,-16" text="C[n] = \f x. f^n x" />
+    <item pos="2,-18" text="P[n] = C[n] SUPP P[0]" />
+
+
+  <item pos="0,-25" text="Kleene's predecessor" origin="1" />
+
+    <item pos="-21,-10" figure="\f. f 3 4" />
+    <item pos="-5,-10"  figure="\f. f 2 3" />
+    <item pos="9,-10"   figure="\f. f 1 2" />
+    <item pos="20,-10"  figure="\f. f 0 1" />
+    <item pos="28,-10"  figure="\f. f 0 0" />
+
+    <item pos="2,-18" text="P[n] = (C[n−1], C[n])" />
+    <item pos="2,-22" text="SUPP = \p. (SND p, SUCC (SND p))" />
+    <item pos="2,-24" text="PRED = \n. FST (n SUPP P[0])" />
+    <!-- <item define="SUPP = \p. (\f. f (SND p) (SUCC (SND p)))" /> -->
+    <!-- <item define="SUPP = \p. let s = SND p in (\f. f s (SUCC s))" /> -->
+    <item define="SUPP = \p. (\s f. f s (SUCC s)) (SND p)" />
+    <item define="PRED = \n. FST (n SUPP (\f. f 0 0))" />
+    <item pos="-32,-31" figure="SUPP" />
+    <item pos="-9,-31"  figure="PRED" />
+
+
+  <item pos="0,-47" text="Using SOME" origin="1" />
+
+    <item pos="-15,-10" figure="\k y. k 3" />
+    <item pos="-2,-10"  figure="\k y. k 2" />
+    <item pos="9,-10"   figure="\k y. k 1" />
+    <item pos="18,-10"  figure="\k y. k 0" />
+    <item pos="24,-10"  figure="\k y. y" />
+
+    <item pos="2,-16" text="NONE   = \k y. y" />
+    <item pos="2,-18" text="SOME x = \k y. k x" />
+    <item pos="2,-20" text="P[0]   = NONE" />
+    <item pos="2,-22" text="P[n+1] = SOME C[n]" />
+    <item pos="2,-25" text="EXTR = \p. p I Default" />
+    <item pos="2,-27" text="SUPP = \p. SOME (p SUCC C[0])" />
+    <item pos="2,-29" text="PRED = \n. (n SUPP P[0]) I C[0]" />
+
+    <item define="NONE = \k y. y" />
+    <item define="SOME = \x k y. k x" />
+    <item define="EXTR = \p. p I Default" />
+    <item define="SUPP = \p. SOME (p SUCC 0)" />
+    <item define="PRED = \n. (n SUPP NONE) I 0" />
+    <item pos="-40,-29" figure="EXTR" />
+    <item pos="-28,-29" figure="SUPP" />
+    <item pos="-9,-29"  figure="PRED" />
+    
+  
+  <item pos="0,-43" text="Shortest predecessor (Velmans? Bunder and Urbanek?)" origin="1" />
+
+    <item pos="-15,-10" figure="\f x k. k (f (f (f x)))" />
+    <item pos="-2,-10"  figure="\f x k. k (f (f x))" />
+    <item pos="9,-10"   figure="\f x k. k (f x)" />
+    <item pos="18,-10"  figure="\f x k. k x" />
+    <item pos="24,-10"  figure="\f x k. x" />
+
+    <item pos="2,-17" text="P[0]   f x = \k. x" />
+    <item pos="2,-19" text="P[n+1] f x = \k. k (f^n x)" />
+    <item pos="2,-22" text="EXTR = \p. p I" />
+    <item pos="2,-24" text="SUPP = \p k. k (p f)" />
+    <item pos="2,-26" text="PRED = \n. \f x. (n SUPP P[0]) I" />
+
+    <item define="EXTR = \p. p I" />
+    <item define="SUPP = \p k. k (p f)" />
+    <item pos="-33,-28" figure="EXTR" />
+    <item pos="-24,-28" figure="SUPP" />
+    <item pos="-9,-28"  figure="\n. \f x. (n (\p k. k (p f)) (\k. x)) I" />
+
+ </items>
+</workspace>

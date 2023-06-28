@@ -14,9 +14,12 @@ class Window:
     def __init__( self, caption, size ):
 
         pygame.init()
-        self.size = size     # tuple, size of window in pixels
-        pygame.display.set_mode( self.size, pygame.RESIZABLE )  
-        self.window = pygame.display.get_surface()  # main surface
+        
+        self.size   = None      # tuple, size of window in pixels
+        self.window = None      # main surface
+        self.surface = None     # Draw to other Surface, not self.window   !!! used?
+        
+        self.createWindow( size )
         
         self.caption = caption
         pygame.display.set_caption( caption )
@@ -27,8 +30,6 @@ class Window:
         self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
         self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
 
-        self.surface = None     # Draw to other Surface, not self.window
-        
         # Invalidation
         self.paintEvent = pygame.event.Event( events.ONPAINTEVENT )
         self.paintEventSent = False
@@ -38,6 +39,11 @@ class Window:
         #print("quit", self)
         pygame.quit()
 
+
+    def createWindow( self, size ):
+        self.size = size
+        pygame.display.set_mode( self.size, pygame.RESIZABLE )
+        self.window = pygame.display.get_surface()
 
 
     def getSurface( self ):
@@ -109,8 +115,7 @@ class Window:
         "Process standart events"
         if pygame.VIDEORESIZE == event.type:
             if self.size != event.size:
-                self.size = event.size
-                self.window = pygame.display.set_mode( self.size, pygame.RESIZABLE )
+                self.createWindow( event.size )
                 self.invalidate()
 
         elif events.ONPAINTEVENT == event.type:

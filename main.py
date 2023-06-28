@@ -23,7 +23,6 @@ from    matrix      import  *
 from    window      import  Window
 
 import  let
-import  lambdaparser
 import  refnames
 
 from    figure      import  Ring,Bubble,Group,Figure
@@ -140,8 +139,13 @@ class Manipulator( Window ):
         windowSize = tuple(map(int, config.get( 'windowsize', '600x450' ).split("x")))
         
         Window.__init__( self, caption, windowSize )
+        
+        if not config.IS_WEB_PLATFORM:
+            favicon = pygame.image.load('favicon.png')
+            pygame.display.set_icon(favicon)
+        
 
-        self.items = []
+        self.items = []  # FieldItem-s
         
         
         # Load default workspace
@@ -155,7 +159,6 @@ class Manipulator( Window ):
         self.expandMatrix = TransformMatrix()
         self.expandMatrix.setExpand( Figure.expandCoef )
 
-        self.viewMatrix = None
         self.viewMatrix = self.defaultView( self.size, 35 )
         self.viewMovePos = None            # Start position of dragging the View
         self.viewMatrixSaved = None  #!!! temporal ?
@@ -811,7 +814,15 @@ class Manipulator( Window ):
                 for procMod,proc in procs:
                     if procMod == eventMods or procMod & eventMods:
                         proc()
+        
+        
+        elif VIDEORESIZE == event.type:
+            # mainly handled in Window class; here we additionally centrize the view
+            if self.size != event.size:
+                shift = (Vector2(event.size) - Vector2(self.size)) / 2
+                self.moveView( shift.x, shift.y )
             
+        
         # User events
         
         if ENDURINGEVENT == event.type:
@@ -1007,15 +1018,19 @@ class Manipulator( Window ):
                 self.invalidate()
         
         def onSaveWorkspaceName( self, workspaceName ):
+            if not workspaceName: return
             xmlData = saving.save( self, pretty = True )
             if xmlData:
                 key = "workspace_%s" % workspaceName
                 localstorage.save_value(key, xmlData)
             
         def onLoadWorkspaceName( self, workspaceName ):
+            if not workspaceName: return
             key = "workspace_%s" % workspaceName
             xmlData = localstorage.load_value(key)
             if xmlData and saving.load( self, xmlData ):
+                self.invalidate()
+            elif saving.load_from_file( self, workspaceName + ".xml" ):  # allow loading included workspaces
                 self.invalidate()
 
 

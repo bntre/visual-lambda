@@ -29,8 +29,8 @@ class Parser:
 
     def __init__( self ):
         
-        self.lib = Library()        # Create Library
-        self.lib.init( self )       # parser.lib reference must exist before initialization of Library
+        self.lib = Library( self )  # Create Library
+        self.lib.init()             # parser.lib reference must exist before initialization of Library
 
     
     def parse( self, str ):
@@ -81,11 +81,10 @@ class Parser:
                     expr = Variable( vars[ varname ] )
                 
                 else:
-                    try:
-                        expr = self.lib[ varname ]          # Try to search in Library
-                    except:
+                    expr = self.lib.find_item( varname )
+                    if not expr:
                         expr = Variable()
-                        print("Warning: Free Variable '%s': %s" % (varname, expr))
+                        print("Warning: Free Variable '%s'" % varname)
 
             
             elif LET == vartype:            # Variable of Let-Expression
@@ -166,10 +165,10 @@ class Parser:
             elif 'let' == t:
                 level = addlevel( LET, level )
 
-                var = tokens.next()
+                var = next(tokens)
                 level.append( ( var, LET ) )
                 
-                be = tokens.next()
+                be = next(tokens)
                 if not( '=' == be or 'be' == be ):
                     debug('parse', "Error: 'let %s' without '=' (got %s)" % (var, be) )
 
