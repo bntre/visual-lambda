@@ -38,5 +38,5 @@ Also available online at: [https://bntr.itch.io/visual-lambda](https://bntr.itch
 ## Related works
 - [Programming with Visual Expressions, Wayne Citrin](https://web.archive.org/web/20110524135539/users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)
 - [A Graphical Notation for the Lambda Calculus, Dave Keenan](https://dkeenan.com/Lambda/)
-- [Alligator Eggs, Bret Victor](http://worrydream.com/AlligatorEggs/)
+- [Alligator Eggs, Bret Victor](http://worrydream.com/AlligatorEggs/) ([browser game](https://tibordp.github.io/gator-calculus/))
 - More in [Prathyvsh's catalog](https://github.com/prathyvsh/lambda-calculus-visualizations)
