@@ -1,4 +1,4 @@
-<sub>The project has been moved from https://code.google.com/archive/p/visual-lambda/ and from https://bitbucket.org/bntr/visual-lambda as well.</sub>
+<sub>The project has been moved from https://code.google.com/archive/p/visual-lambda/<br/>and from https://bitbucket.org/bntr/visual-lambda as well.</sub>
 
 # Visual Lambda Calculus
 
@@ -16,6 +16,7 @@ Also available online at: [https://bntr.itch.io/visual-lambda](https://bntr.itch
 
 ## Examples
 - Pairs, construction, reduction: [https://www.youtube.com/watch?v=YEyyyzUuUJQ](https://www.youtube.com/watch?v=YEyyyzUuUJQ)
+- Predecessors: [https://www.youtube.com/watch?v=CWzn2ucPMdg](https://www.youtube.com/watch?v=CWzn2ucPMdg)
 - ['MULT 3 2' evaluation](https://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif) (gif)
 - ['((λgm.m(gg))(λgm.m(gg)))M' building and evaluation](https://bntr.planet.ee/lambda/lambda_F_anim.gif) (gif)
 - ['Y I' evaluation](https://bntr.planet.ee/lambda/Y_I.gif) (gif)
