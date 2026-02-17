@@ -6,11 +6,6 @@ import  asyncio
 import  pygame
 from    pygame.locals  import * 
 
-# Issue https://github.com/pygame/pygame/issues/3778 (fixed in pygame 2.4.0)
-USE_GFXDRAW = 0  # set for pygame < 2.4.0; gfxdraw allows negative circle positions, but fill and stroke are not match for small circles
-if USE_GFXDRAW:
-  import  pygame.gfxdraw
-
 import  cursors
 import  toolbar
 
@@ -265,7 +260,8 @@ class Manipulator( Window ):
             fontsize = fontsize * 3//2  #!!! fixing pygbag
         toolbar.ToolbarItem.fontsize = fontsize
         toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
-        toolbar.ToolbarItem.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
+        #toolbar.ToolbarItem.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
+        toolbar.ToolbarItem.fontAntialias = True
                 
         left = toolbar.Toolbar( toolbar.LEFT )
         if config.ALLOW_SYSTEM_CONSOLE:
@@ -361,25 +357,14 @@ class Manipulator( Window ):
                 -r < pos[1] < size[1]+r
         
 
-    def circle( self, surface, pos, r, col=None, width=1 ):
-
-        r = toInt( r )
-
-        if r < 1:
-            debug( 1, "Error: circle radius < 1" )
-            return
-
-        pos = tuple(map( toInt, pos ))
+    def circle( self, surface, pos, r, col=None, width=1, aa=True ):
 
         col = self.getColor( col )
         
-        if USE_GFXDRAW:
-            if width == 0:
-                pygame.gfxdraw.filled_circle( surface, pos[0], pos[1], r, col )
-            else:
-                pygame.gfxdraw.circle( surface, pos[0], pos[1], r, col )
-                if width > 1:
-                    pygame.gfxdraw.circle( surface, pos[0], pos[1], r-1, col )
+        if aa:
+            if width > 1 and r < 50:  # avoid small bold circles
+                width = 1
+            pygame.draw.aacircle( surface, col, pos, r, width )
         else:
             pygame.draw.circle( surface, col, pos, r, width )
 
@@ -530,7 +515,7 @@ class Manipulator( Window ):
         mask = pygame.Surface( size )
         mask.fill( colorMask1 )
         r = toInt(r)
-        self.circle( mask, (r,r), r, colorMask2, width=0 )
+        self.circle( mask, (r,r), r, colorMask2, width=0, aa=False )
         mask.set_colorkey( colorMask2, RLEACCEL )
         surface.blit( mask, (0,0) )
         surface.set_colorkey( colorMask1, RLEACCEL )

@@ -28,7 +28,8 @@ class Window:
         if config.IS_WEB_PLATFORM: 
             fontsize = fontsize * 2  #!!! fixing pygbag
         self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
-        self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
+        #self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
+        self.fontAntialias = True
 
         # Invalidation
         self.paintEvent = pygame.event.Event( events.ONPAINTEVENT )

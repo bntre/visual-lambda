@@ -24,9 +24,9 @@ Also available online at: [https://bntr.itch.io/visual-lambda](https://bntr.itch
 
 ## Dependencies
 - python 3
-- pygame 2.4.0
+- pygame-ce 2.5.6
 
-## Running
+## Runningpython 
     python main.py
 
 ## Controls
