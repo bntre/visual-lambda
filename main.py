@@ -242,9 +242,8 @@ class Manipulator( Window ):
             pygame.time.set_timer(SYSTEMCONSOLE_TIMEREVENT, 100)
 
         if config.IS_WEB_PLATFORM:
-            pygame.time.set_timer(LOCALSTORAGE_TIMEREVENT, 500)
-        
-    
+            self._next_localstorage_poll_ms = 0
+
         #-----------------------------------------------------
         # Prepare toolbars
         
@@ -301,12 +300,20 @@ class Manipulator( Window ):
 
     async def run( self ):
         
-        sleepSec = 0.02
+        sleepSec = 0.01
         if config.IS_WEB_PLATFORM:
             sleepSec = 0  # pygbag asked for 0
     
         while True:
-        
+            
+            if config.IS_WEB_PLATFORM:
+                # set_timer is not implemented on WASM yet.
+                now_ms = pygame.time.get_ticks()
+
+                if now_ms >= self._next_localstorage_poll_ms:
+                    self.handleLocalStorageCommands()
+                    self._next_localstorage_poll_ms = now_ms + 500
+
             for e in pygame.event.get():
                 self.handleEvent( e )
                 if e.type == pygame.QUIT:
@@ -815,14 +822,6 @@ class Manipulator( Window ):
                 self.postEvent( e )
             self.invalidate()
        
-        if config.IS_WEB_PLATFORM:
-            if event.type == LOCALSTORAGE_TIMEREVENT:
-                # Check if user has called a browser console command, e.g. addItem('\\x. x x')
-                localstorage.handle_storage('addItem', self.onInputItem, "|")
-                localstorage.handle_storage('clearWorkspace', self.onClearWorkspace)
-                localstorage.handle_storage('saveWorkspace', self.onSaveWorkspaceName)
-                localstorage.handle_storage('loadWorkspace', self.onLoadWorkspaceName)
-        
         if config.ALLOW_SYSTEM_CONSOLE:
             if event.type == SYSTEMCONSOLE_TIMEREVENT:
                 self.consoleCheck()  # it calls console input callbacks, e.g. self.onLoadWorkspaceFileName
@@ -998,6 +997,13 @@ class Manipulator( Window ):
     
     if config.IS_WEB_PLATFORM:  # Save to/Load from localStorage
         
+        def handleLocalStorageCommands( self ):
+            # Check if user has called a browser console command, e.g. addItem('\\x. x x')
+            localstorage.handle_storage('addItem',          self.onInputItem, "|")
+            localstorage.handle_storage('clearWorkspace',   self.onClearWorkspace)
+            localstorage.handle_storage('saveWorkspace',    self.onSaveWorkspaceName)
+            localstorage.handle_storage('loadWorkspace',    self.onLoadWorkspaceName)
+
         def onClearWorkspace( self, _ ):
             if saving.load_from_file( self, "clear.xml" ):
                 self.invalidate()
@@ -1307,7 +1313,12 @@ class Manipulator( Window ):
         
 
 
-asyncio.run(
-    Manipulator('Visual Lambda').run()
-)
+def main():
+    asyncio.run(
+        Manipulator('Visual Lambda').run()
+    )
+
+
+if __name__ == '__main__':
+    main()
 

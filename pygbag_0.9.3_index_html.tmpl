@@ -1,4 +1,6 @@
-<html lang="en-us"><script src="{{cookiecutter.cdn}}pythons.js" type=module id="site" data-python="python{{cookiecutter.PYBUILD}}" data-LINES=42 data-COLUMNS=132 data-os="vtx,snd,gui" async defer>#<!--
+<html lang="en-us"><script src="{{cookiecutter.cdn}}pythons.js" type=module id="site" data-python="python{{cookiecutter.PYBUILD}}" data-LINES=42 data-COLUMNS=132 data-os="vtx,gui" async defer>#<!--
+
+# The template is based on https://github.com/pygame-web/pygbag/blob/main/static/default.tmpl
 
 print("""
 Loading {{cookiecutter.title}} from {{cookiecutter.archive}}.apk
@@ -58,25 +60,6 @@ async def custom_site():
         await asyncio.sleep(.1)
 
     main = appdir / "assets" / "main.py"
-
-    # TODO: test for window.webkitAudioContext and block aio loop until gesture if accessing media manager play
-    # before a gesture is recorded ( touch or click )
-
-    # test/wait user media interaction
-    if not platform.window.MM.UME:
-
-        # now that apk is mounted we have access to font cache
-        # but we need to fill __file__ that is not yet set
-        __import__(__name__).__file__ = main
-
-        # now make a prompt
-        print("Ready to start !")
-
-        print("""
-        * Waiting for media user engagement : please click/touch page *
-    """)
-        while not platform.window.MM.UME:
-            await asyncio.sleep(.1)
 
     # start async top level machinery if not started and add a console in any case if requested.
     await TopLevel_async_handler.start_toplevel(platform.shell, console=window.python.config.debug)
@@ -143,7 +126,7 @@ asyncio.run( custom_site() )
 config = {
     xtermjs : "{{cookiecutter.xtermjs}}" ,
     _sdl2 : "canvas",
-    user_canvas : 0,
+    user_canvas : 1,
     user_canvas_managed : 0,
     gui_divider : 2,
     ume_block : {{cookiecutter.ume_block}},
@@ -353,6 +336,8 @@ frameborder="1"
         // make your js customization here
         console.log(__FILE__, "custom_onload")
 
+        //debug_hidden = false //!!! use this for debug
+
         pyconsole.hidden = debug_hidden
         system.hidden = debug_hidden
         transfer.hidden = debug_hidden
@@ -400,6 +385,72 @@ frameborder="1"
     function frame_online(url) {
         window.frames["iframe"].location = url;
     }
+
+
+
+
+    // Visual Lambda stuff
+    // localStorage exchange
+    function setStorageValue(name, newValue, separator = undefined) {
+        let key = "storage_" + name;
+        let value = undefined;
+        if (separator) {
+            value = window.localStorage.getItem(key);
+            if (value) {
+                value += separator + newValue;
+            } else {
+                value = newValue;
+            }
+        } else {
+            value = newValue;
+        }
+        window.localStorage.setItem(key, value);
+    }
+    
+    function addItem(expression) {
+        setStorageValue("addItem", expression, "|");
+    }
+    function clearWorkspace() {
+        setStorageValue("clearWorkspace", "1");
+    }
+    function saveWorkspace(workspaceName) {
+        setStorageValue("saveWorkspace", workspaceName);
+    }
+    function loadWorkspace(workspaceName) {
+        setStorageValue("loadWorkspace", workspaceName);
+    }
+    function help() {
+        console.log("addItem(expression) - add an item by expression, e.g. addItem('\\x. x x')");
+        console.log("clearWorkspace() - clear the workspace");
+        console.log("saveWorkspace(workspaceName) - save current workspace to localStorage, e.g. saveWorkspace('combinators3')");
+        console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
+    }
+
+    // Allow using browser console through an iframe on itch.io
+    window.addEventListener('message', event => {
+        //console.log(event);
+        if (event.origin !== "https://bntr.itch.io") return;
+        const method = event.data[0];
+        if (method === "addItem") {
+            addItem(event.data[1]);
+        } else if (method === "clearWorkspace") {
+            clearWorkspace();
+        } else if (method === "saveWorkspace") {
+            saveWorkspace(event.data[1])
+        } else if (method === "loadWorkspace") {
+            loadWorkspace(event.data[1]);
+        }
+    });
+    
+    // Then in browser console:
+    //> function vl(...args) { document.getElementById("game_drop").contentWindow.postMessage(args, "*") }
+    //> vl('addItem','MULT 2 (\\f x. f (f x))')
+    //> vl('clearWorkspace')
+    //> vl('saveWorkspace', 'combinators3')
+    //> vl('loadWorkspace', 'combinators3')
+
+
+
 
     </script>
 

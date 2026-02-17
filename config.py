@@ -7,7 +7,7 @@ import configparser
 # Platform
 
 IS_WEB_PLATFORM = sys.platform == 'emscripten'
-#IS_WEB_PLATFORM = True  # to test web mode
+#IS_WEB_PLATFORM = True  # to test web mode locally
 
 ALLOW_SYSTEM_CONSOLE = not IS_WEB_PLATFORM
 
@@ -40,7 +40,7 @@ def readCfg():
 
     else:
         # Read config.cfg
-        parser.readfp( f )
+        parser.read_file( f )
 
         # Get Configuration dict
         cfg = dict( parser.items('Visual Lambda') )
