@@ -1,43 +1,77 @@
-<sub>The project has been moved from https://code.google.com/archive/p/visual-lambda/<br/>and from https://bitbucket.org/bntr/visual-lambda as well.</sub>
+<sub>The project was migrated from https://code.google.com/archive/p/visual-lambda/ and from https://bitbucket.org/bntr/visual-lambda.</sub>
 
 # Visual Lambda Calculus
 
 ![logo](https://bntr.planet.ee/lambda/loop_.gif)
 
-The Visual Lambda environment enables intuitive manipulation of lambda calculus expressions.
+Visual Lambda is a graphical environment and visual programming tool
+for exploring pure lambda calculus using Bubble Notation.  
+It represents lambda expressions as colorful, tree-like 2D structures
+and animates beta-reduction steps smoothly, making reductions easy to follow.
 
-![](https://raw.githubusercontent.com/bntre/visual-lambda/master/screenshot.png)
+**Try it live**: https://bntr.itch.io/visual-lambda
 
-Also available online at: [https://bntr.itch.io/visual-lambda](https://bntr.itch.io/visual-lambda)
+The project started as a master's thesis (2008); see the thesis for details:
+[visual_lambda.pdf](https://bntr.planet.ee/lambda/work/visual_lambda.pdf).
 
-## Notation
-- [Basics](https://bntr.planet.ee/lambda/visual_lambda_bubble_notation.gif)
-- More detailed in this thesis: [visual_lambda.pdf](https://bntr.planet.ee/lambda/work/visual_lambda.pdf)
+This might be useful for students, educators and researchers who want
+an intuitive, interactive way to explore λ‑calculus and reduction strategies.
 
-## Examples
-- Pairs, construction, reduction: [https://www.youtube.com/watch?v=YEyyyzUuUJQ](https://www.youtube.com/watch?v=YEyyyzUuUJQ)
-- Predecessors: [https://www.youtube.com/watch?v=CWzn2ucPMdg](https://www.youtube.com/watch?v=CWzn2ucPMdg)
-- ['MULT 3 2' evaluation](https://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif) (gif)
-- ['((λgm.m(gg))(λgm.m(gg)))M' building and evaluation](https://bntr.planet.ee/lambda/lambda_F_anim.gif) (gif)
-- ['Y I' evaluation](https://bntr.planet.ee/lambda/Y_I.gif) (gif)
+![Screenshot](https://raw.githubusercontent.com/bntre/visual-lambda/master/screenshot.png)
 
+## Bubble Notation
 
-## Dependencies
-- python 3
+![Basics](https://bntr.planet.ee/lambda/visual_lambda_bubble_notation.gif)
+
+Watch a short demo to get an idea of how Bubble Notation works:  
+https://www.youtube.com/watch?v=aRgu8S3Pnb8
+
+<p><a href="https://www.youtube.com/watch?v=aRgu8S3Pnb8" title="Factorial 3">
+ <img src="https://img.youtube.com/vi/aRgu8S3Pnb8/maxresdefault.jpg" width="600" alt="Factorial 3"/>
+</a></p>
+
+Other video examples:
+- Pairs, construction and reduction: https://www.youtube.com/watch?v=YEyyyzUuUJQ
+- Predecessors: https://www.youtube.com/watch?v=CWzn2ucPMdg
+- Recursion: https://www.youtube.com/watch?v=bGG9exO2kew
+
+Old GIF examples:
+- 'MULT 3 2' evaluation: [MULT_3_2_=_6.gif](https://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif)
+- 'Y I' evaluation: [Y_I.gif](https://bntr.planet.ee/lambda/Y_I.gif)
+
+## Requirements
+
+Dependencies
+- Python 3.8+
 - pygame-ce 2.5.6
 
-## Runningpython 
-    python main.py
+Install and run locally:
+```
+pip install pygame-ce==2.5.6
+python main.py
+```
 
 ## Controls
-- [controls.txt](controls.txt)
 
-## Predefined expression library
-- [library.txt](library.txt)
+See the full UI control reference in [controls.txt](controls.txt).
 
+## Expression library
 
-## Related works
+The repository includes a small library of predefined expressions that
+you can paste into the console: see [library.txt](library.txt).
+
+## Related work
+
 - [Programming with Visual Expressions, Wayne Citrin](https://web.archive.org/web/20110524135539/users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)
 - [A Graphical Notation for the Lambda Calculus, Dave Keenan](https://dkeenan.com/Lambda/)
 - [Alligator Eggs, Bret Victor](http://worrydream.com/AlligatorEggs/) ([browser game](https://tibordp.github.io/gator-calculus/))
 - More in [Prathyvsh's catalog](https://github.com/prathyvsh/lambda-calculus-visualizations)
+
+## Future work
+
+I still think Bubble Notation is a promising way to represent lambda terms, but this implementation is a bit dated.  
+A modern reimplementation could improve interaction and visuals.  
+Possible directions:
+
+- Make terms feel more "springy" and react to dragging with natural, physics-like motion.
+- Revisit the lazy-evaluation visualization to make it clearer and more robust.

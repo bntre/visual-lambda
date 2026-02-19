@@ -1,62 +1,60 @@
-
 --------------------------------------------------------
-Controls
+Visual Lambda environment mouse/keyboard controls
 
 
+View
+    Zoom                                Mouse Wheel, +/-
+    Move                                Middle mouse button, Arrow buttons
+    Refresh                             F5
 
-Items
-    Input from console                  I
-        Examples:
-            >> \x y. (\x. x)
-            >> FACT 3                   (see library.txt)
-            >> "Label"
-    
+
+Items on screen (lambda terms or text labels)
     Select, Drag                        Left mouse button
     
     With selected item
         Delete                          D
         Copy                            C
 
-    Add Free Variable                   V
+    Input from console                  I
+        Examples:
+            >> \x y. (\x. x)            add lambda term
+            >> FACT 3                   add predefined lambda term, see library.txt
+            >> "Label"                  add text label
 
 
-Zoom View                               Mouse Wheel, +/-
-Move View                               Middle mouse button, Arrows
-Refresh View                            F5
+Construction of lambda terms
 
-
-Reduce Selected                         Enter
-Nonstop reduction                       Ctrl+Enter
-
-
-Modes of reduction
-    Applicative/Normal                  Alt+A
-    Lazy/Pure                           Alt+L, Alt+P
-    Inside selection                    Alt+S
-    
-    Quick Mode                          Q
-        Pick for reduction
-
-
-Construction of terms
-    Expand selection                    Space
-    
-    Add Free Variable                   V
+    Add free variable                   V
     
     With selected sub-term
-        Delete                          Delete
-        Insert Application before       Insert,      A
-        Insert Application after        Ctrl+Insert, Ctrl+A
-        Insert Lambda                   Alt+Insert,  L
+        Delete                          Del
+        Insert application before       Ins or A
+        Insert application after        Ctrl+Ins or Ctrl+A
+        Insert lambda                   Alt+Ins or L
         Bind Variable/Lambda with 
           selected Lambda/Variable      RClick or Ctrl+LClick
-          
-    Applicate                           Drop Item onto another
-
-    Substitute for free variable 
-        with Item                       Drop Item onto free variable
-
     
+    Expand selection                    Space
+    
+    Create application (apply)          Drop one term onto another
+
+    Substitute a free variable 
+        with a term                     Drop the term onto the free variable
+
+
+Reduction
+
+    Reduce single step                  Enter
+    Full reduction                      Ctrl+Enter
+
+    Modes of reduction
+        Applicative/Normal              Alt+A
+        Lazy/Pure                       Alt+L, Alt+P
+        Inside selection only           Alt+S
+    
+    Quick (Finger) Mode                 Q
+        Pick a term for reduction
+
 
 History
     Undo                                Ctrl+Z, Alt+Left, Backspace
@@ -65,12 +63,7 @@ History
 Workspace
     Save                                Ctrl+S
     Load                                Ctrl+O
-    
 
-
-Zoom                                    Wheel
-
-
-
-Save screen to png                      F12
-Mode of export frames                   Alt+E
+Saving images/frames
+    Save screen to png                  F12
+    Mode of export frames               Alt+E
