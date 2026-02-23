@@ -17,7 +17,7 @@ The project started as a master's thesis (2008); see the thesis for details:
 This might be useful for students, educators and researchers who want
 an intuitive, interactive way to explore λ‑calculus and reduction strategies.
 
-![Screenshot](https://raw.githubusercontent.com/bntre/visual-lambda/master/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/bntre/visual-lambda/master/res/screenshot.png)
 
 ## Bubble Notation
 
@@ -75,3 +75,8 @@ Possible directions:
 
 - Make terms feel more "springy" and react to dragging with natural, physics-like motion.
 - Revisit the lazy-evaluation visualization to make it clearer and more robust.
+
+## License
+
+- Project license: GNU Lesser General Public License v3.0.
+- This project uses Open Sans, licensed under SIL Open Font License 1.1.

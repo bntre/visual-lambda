@@ -77,16 +77,22 @@ class Parser:
 
             elif BODY == vartype:           # Variable (Free or Bound)
 
-                if varname in vars:                         # Try to search in Bound variables
+                if varname in vars:         # Try to search in Bound variables
                     expr = Variable( vars[ varname ] )
                 
                 else:
                     expr = self.lib.find_item( varname )
                     if not expr:
-                        expr = Variable()
-                        print("Warning: Free Variable '%s'" % varname)
+                        # Free variable
 
-            
+                        if varname[-1] == "G":    #!!! Hacky: Golden coin - special yellow constant
+                            expr = Variable(None)
+                            print("Special Free Variable (golden coin) '%s'" % varname)
+
+                        else:
+                            expr = Variable()
+                            #print("Warning: Free Variable '%s'" % varname)
+
             elif LET == vartype:            # Variable of Let-Expression
                 
                 let = Let( be= None, expr= None )

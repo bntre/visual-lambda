@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<workspace>
+ <label name="Visual Lambda Library Demo" />
+ <items>
+                                                        <item pos="0,8" text="Lambda Puzzles: Unlock the Coin" origin="1" />
+
+
+  <item pos="-6,-3" text="See the golden coin, sealed inside a lambda-term. It is trapped in layers of abstraction." origin="1" />
+  <item pos="0,-1"  text="Your task: forge a key - another lambda-term. Drop it onto the white circle." origin="1" />
+  <item pos="0,-1"  text="Let it reduce to its final form." origin="1" />
+  <item pos="0,-1"  text="If your key is the right one, all structure will dissolve - and only the coin will remain." origin="1" />
+  
+                                                            <item pos="26,-1.5"  text="Answers Behind the Grey Veil" />
+
+
+  <item pos="0,-7" figure="(\f. f G) X" origin="1" />       <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="I" />
+
+  <item pos="0,-10" figure="(\f. f f G) X" origin="1" />    <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="F" />
+
+  <item pos="0,-10" figure="(\f. f (f f f f) (f f f f) (f f f G)) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a b c. c" />
+
+  <item pos="0,-10" figure="(\g. (\f. f (f f f f) (f f G f)) g g) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a b c. b" />
+
+  <item pos="0,-10" figure="X (\f. f G)" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a I" />
+
+  <item pos="0,-10" figure="X (\f g. f (g f f f) (g f f G) (g f f f))" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a (\b c d. c) (\e f g. g)" />
+
+  <item pos="0,-10" figure="X (\a b c d e f. d G)" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a f f f I f f" />
+
+  <item pos="0,-10" figure="X (\f. f (\g. g (\h. h G)))" origin="1" />
+                                                            <item pos="24,5" rect="12,10" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a (\b. b (\c. c I))" />
+
+  <item pos="0,-10" figure="X (\f. f (\g. g g G) f)" origin="1" />
+                                                            <item pos="25,5" rect="10,10" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a (\b c. b F)" />
+
+  <item pos="0,-10" figure="(\a. a a (\b. b G)) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a b. b I" />
+
+  <item pos="0,-10" figure="(\a. a (\b. a (b G))) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a T" />
+
+  <item pos="0,-10" figure="X (\a b. a G b)" origin="1" />
+  <item pos="8,0"  figure="X (\a b. b a G)" />              <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a. a T F" />
+
+</items>
+</workspace>

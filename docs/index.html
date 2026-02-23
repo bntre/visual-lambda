@@ -1,0 +1,522 @@
+<html lang="en-us"><script src="https://pygame-web.github.io/cdn/0.9.3/pythons.js" type=module id="site" data-python="python3.12" data-LINES=42 data-COLUMNS=132 data-os="vtx,gui" async defer>#<!--
+
+# The template is based on https://github.com/pygame-web/pygbag/blob/main/static/default.tmpl
+
+print("""
+Loading Visual Lambda from visual-lambda-2.2.apk
+    Pygbag Version : 0.9.3
+    Template Version : 0.9.3
+    Python  : 3.12
+    CDN URL : https://pygame-web.github.io/cdn/0.9.3/
+    Screen  : 1280x720
+    Title   : Visual Lambda
+    Folder  : visual-lambda-2.2
+    Authors : pgw
+    SPDX-License-Identifier: cookiecutter.spdx
+
+""")
+
+import sys
+import asyncio
+import platform
+import json
+from pathlib import Path
+
+# do not rename
+async def custom_site():
+    import embed
+    platform.document.body.style.background = "#7f7f7f"
+
+    platform.window.transfer.hidden = true
+    platform.window.canvas.style.visibility = "visible"
+
+
+    bundle = "visual-lambda-2.2"
+
+    # the C or js loader could do that but be explicit.
+    appdir = Path(f"/data/data/{bundle}") # /data/data/visual-lambda-2.2
+    appdir.mkdir()
+
+
+    # unpack filesystem from compressed archive into work dir
+    if platform.window.location.host.find('.itch.zone')>0:
+        import zipfile
+        async with platform.fopen("visual-lambda-2.2.apk", "rb") as archive:
+            with zipfile.ZipFile(archive) as zip_ref:
+                zip_ref.extractall(appdir.as_posix())
+    else:
+        import tarfile
+        async with platform.fopen("visual-lambda-2.2.tar.gz", "rb") as archive:
+            tar = tarfile.open(fileobj=archive, mode="r:gz")
+            tar.extractall(path=appdir.as_posix(), filter='tar')
+            tar.close()
+
+    # preloader will change to work dir and prepend it to sys.path
+    platform.run_main(PyConfig, loaderhome= appdir / "assets", loadermain=None)
+
+
+    # wait preloading complete : that includes images and wasm compilation of bundled modules
+    while embed.counter()<0:
+        await asyncio.sleep(.1)
+
+    main = appdir / "assets" / "main.py"
+
+    # start async top level machinery if not started and add a console in any case if requested.
+    await TopLevel_async_handler.start_toplevel(platform.shell, console=window.python.config.debug)
+
+    # now that apk is mounted we have access to font cache
+    # but we need to fill __file__/__name__ that are not yet set
+    __import__(__name__).__file__ = main
+
+
+    def ui_callback(pkg):
+        print(f"installing {pkg}")
+
+    await shell.source(main, callback=ui_callback)
+
+    # if you don't reach that step
+    # your main.py has an infinite sync loop somewhere !
+    print("noctxl.html: ready")
+
+    shell.interactive()
+
+asyncio.run( custom_site() )
+
+
+
+
+
+
+
+
+
+
+
+
+# BEGIN BLOCK
+#
+# now this is the html part you can (and should) customize
+# It is not mandatory : pygame-script when it reads the first line (also called
+# shebang ) of above code create absolute minimal widget set
+# required for running with default rules
+#
+# do not alter that comment block it is separating python code from html code
+# =============================================================================
+# --></script><head><!--
+//=============================================================================
+//
+//
+//
+//
+//
+//
+//
+
+    {%- if cookiecutter.comment != "" -%}
+{{cookiecutter.comment}}
+    {% endif %}
+
+--><script type="application/javascript">
+// END BLOCK
+
+
+
+// this dict is available under PyConfig.config from __main__
+
+config = {
+    xtermjs : "1" ,
+    _sdl2 : "canvas",
+    user_canvas : 1,
+    user_canvas_managed : 0,
+    gui_divider : 2,
+    ume_block : 1,
+    can_close : 0,
+    archive : "visual-lambda-2.2",
+    gui_debug : 2,
+    cdn : "https://pygame-web.github.io/cdn/0.9.3/",
+    autorun : 0,
+    PYBUILD : "3.12",
+    fb_ar   :  1.77,
+    fb_width : "1280",
+    fb_height : "720"
+}
+
+</script>
+
+    <title>Visual Lambda</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+
+    <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
+
+    <style>
+        #status {
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 20px;
+            margin-left: 30px;
+            font-weight: bold;
+            color: rgb(120, 120, 120);
+        }
+
+        #progress {
+            height: 20px;
+            width: 300px;
+        }
+
+        div.emscripten { text-align: center; }
+        div.emscripten_border { border: 1px solid black; }
+        div.thick_border { border: 4px solid black; }
+
+        /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+        /* average size of droid screen 470dp x 320dp  */
+        canvas.emscripten {
+            border: 0px none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+
+            padding: 0;
+            margin: 0 auto;
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        body {
+            font-family: arial;
+            margin: 0;
+            padding: none;
+            background-color:powderblue;
+        }
+
+        .topright{
+           position:absolute;
+           top:0px;
+           right:0px;
+        }
+
+        .bottomright {
+            position:absolute;
+            top: 40%;
+            right: 0px;
+        }
+
+        .center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trinfo{
+           position: relative;
+           right: 0px;
+           border: 1px solid black;
+        }
+
+        .framed{
+           position: relative;
+           top: 150px;
+           right: 10px;
+           border: 1px solid black;
+        }
+
+        /* Visual Lambda details hud */
+        .hud-menu {
+            position: fixed; top: 0px; right: 70px; width: 250px; z-index: 20;
+            background: rgba(10, 10, 10, 0.7); color: #f2f2f2;
+            font-family: monospace; font-size: 12px;
+            padding: 6px 8px;
+        }
+        .hud-menu a { color: #6fa8ff; }
+        .hud-menu summary { cursor: pointer; user-select: none; }
+        .hud-menu table { border-collapse: collapse; border: 0; width: 100%; }
+        .hud-menu form { margin-top: 6px; display: flex; gap: 6px; }
+        .hud-menu input { flex: 1; }
+        .hud-menu button { flex: 0 0 auto; }
+
+    </style>
+
+    <script>
+/*
+        if (navigator.serviceWorker)
+            navigator.serviceWorker.register("https://pygame-web.github.io/cdn/0.9.3/pygbag0.9.3.js")
+        else
+            console.warn("Service workers not supported")
+*/
+    </script>
+
+    <script src="https://pygame-web.github.io/cdn/0.9.3//browserfs.min.js"></script>
+
+</head>
+
+<body>
+
+    <div id="transfer" align=center>
+<!--        <div class="spinner" id='spinner'></div> -->
+        <div class="emscripten" id="status">Downloading...</div>
+        <div class="emscripten">
+            <progress value="0" max="100" id="progress"></progress>
+        </div>
+    </div>
+
+
+
+    <canvas class="emscripten" id="canvas"
+width="1px"
+height="1px"
+    oncontextmenu="event.preventDefault()" tabindex=1>
+    </canvas>
+
+    <canvas class="emscripten" id="canvas3d"
+width="1280px"
+height="720px"
+    oncontextmenu="event.preventDefault()" tabindex=1 hidden>
+    </canvas>
+
+    <div id=html></div>
+
+
+    <!-- Visual Lambda details hud -->
+    <div class="hud-menu">
+        <details>
+            <summary>Menu</summary>
+            <div class="menu-content">
+                <a href="https://github.com/bntre/visual-lambda" target="_blank" rel="noopener noreferrer">github.com/bntre/visual-lambda</a><br />
+                Load workspace:<br/>
+                <table><tr>
+                    <td><a href="#" onclick="loadWorkspace('library_demo'); return false;">library_demo</a></td>
+                    <td><a href="#" onclick="loadWorkspace('clear'); return false;">clear</a></td>
+                </tr><tr>
+                    <td><a href="#" onclick="loadWorkspace('puzzles'); return false;">puzzles</a></td>
+                    <td><a href="#" onclick="loadWorkspace('predecessors'); return false;">predecessors</a></td>
+                </tr></table>
+                <form onsubmit="hudAddItem(event)">
+                    <input id="hud-additem-input" type="text" placeholder="e.g. \x. x x" />
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+        </details>
+    </div>
+
+
+    <div id=crt  class=bottomright >
+
+        <div id="system" hidden>
+            <div class="button-container">
+                <button id="aiostop" disabled>AIO ⏏︎</button>
+                <button id="aiopaused_true" disabled>AIO ■</button>
+                <button id="aiopaused_false" disabled>AIO ▶</button>
+                <button id="pygame_mixer_music_pause" disabled>Music ■</button>
+            </div>
+
+            <div class="button-container">
+                <div id=load_min>min</div>
+                <div id=load_avg>avg</div>
+                <div id=load_max>max</div>
+              <button id="load_rst" disabled>RESET</button>
+            </div>
+
+            <div id="level">(battery level unknown)</div>
+            <div id="stateBattery">(charging state unknown)</div>
+
+        </div>
+
+        <div id=box class="emscripten_border" hidden=true>
+
+            <div id="info" class="trinfo"></div>
+
+            <iframe id="iframe" class="framed" name="iframe"
+width="470px" height="90%"
+allowtransparency="true"
+style="z-index: 10;"
+style="background: #FFFFFF;"
+frameborder="1"
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                msallowfullscreen="true"
+                mozallowfullscreen="true"
+                sandbox="allow-same-origin allow-top-navigation allow-scripts allow-pointer-lock"
+                allow="autoplay; fullscreen *; geolocation; microphone; camera; midi; monetization; xr-spatial-tracking; gamepad; gyroscope; accelerometer; xr; cross-origin-isolated"
+                src="https://pygame-web.github.io/cdn/0.9.3/empty.html"
+                scrolling="yes">
+            </iframe>
+        </div>
+
+    </div>
+
+
+    <div id="dlg" hidden>
+        <input type="file" id="dlg_multifile" multiple accept="image/*">
+        <label for="dlg_multifile">Select files</label>
+    </div>
+
+    <div id="pyconsole">
+        <div id="terminal" tabIndex=1 align="left"></div>
+    </div>
+
+    <script type="application/javascript">
+
+    globalThis.__canvas_resized = (self, ecw, ech) => {
+        console.warn("TODO: panda3d canvas monitor", self, ecw, ech)
+    }
+
+    async function custom_onload(debug_hidden) {
+        // this is called before anythinh python is loaded
+        // make your js customization here
+        console.log(__FILE__, "custom_onload")
+
+        //debug_hidden = false //!!! use this for debug
+
+        pyconsole.hidden = debug_hidden
+        system.hidden = debug_hidden
+        transfer.hidden = debug_hidden
+        info.hidden = debug_hidden
+        box.hidden =  debug_hidden
+    }
+
+    function custom_prerun(){
+        // no python main and no (MEMFS + VFS) yet.
+        console.log(__FILE__, "custom_prerun")
+
+    }
+
+    function custom_postrun(){
+        // python main and no VFS filesystem yet.
+        console.log(__FILE__, "custom_postrun")
+
+    }
+
+    function debug() {
+        // allow to gain access to dev tools from js console
+        // but only on desktop. difficult to reach when in iframe
+        python.config.debug = true
+        custom_onload(false)
+        Module.PyRun_SimpleString("shell.uptime()")
+        window_resize()
+    }
+
+    function info_inline(data){
+        document.getElementById("info").innerHTML = data
+    }
+
+    function info_online(url) {
+        // display info about current APK
+        fetch( url /*, options */)
+            .then((response) => response.text())
+            .then((html) => {
+                info_inline(html);
+        })
+        .catch((error) => {
+            console.warn(error);
+        });
+    }
+
+    function frame_online(url) {
+        window.frames["iframe"].location = url;
+    }
+
+
+
+    //-----------------------------------------------------------
+    // Visual Lambda stuff
+
+    // === localStorage exchange
+    function setStorageValue(name, newValue, separator = undefined) {
+        let key = "storage_" + name;
+        let value = undefined;
+        if (separator) {
+            value = window.localStorage.getItem(key);
+            if (value) {
+                value += separator + newValue;
+            } else {
+                value = newValue;
+            }
+        } else {
+            value = newValue;
+        }
+        window.localStorage.setItem(key, value);
+    }
+    function addItem(expression) {
+        setStorageValue("addItem", expression, "|");
+    }
+    function clearWorkspace() {
+        setStorageValue("clearWorkspace", "1");
+    }
+    function saveWorkspace(workspaceName) {
+        setStorageValue("saveWorkspace", workspaceName);
+    }
+    function loadWorkspace(workspaceName) {
+        setStorageValue("loadWorkspace", workspaceName);
+    }
+    function help() {
+        console.log("addItem(expression) - add an item by expression, e.g. addItem('\\x. x x')");
+        console.log("clearWorkspace() - clear the workspace");
+        console.log("saveWorkspace(workspaceName) - save current workspace to localStorage, e.g. saveWorkspace('combinators3')");
+        console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
+    }
+
+    // === itch.io
+    // Allow using browser console through an iframe on itch.io
+    window.addEventListener('message', event => {
+        //console.log(event);
+        if (event.origin !== "https://bntr.itch.io") return;
+        const method = event.data[0];
+        if (method === "addItem") {
+            addItem(event.data[1]);
+        } else if (method === "clearWorkspace") {
+            clearWorkspace();
+        } else if (method === "saveWorkspace") {
+            saveWorkspace(event.data[1])
+        } else if (method === "loadWorkspace") {
+            loadWorkspace(event.data[1]);
+        }
+    });
+    
+    // Then in browser console:
+    //> function vl(...args) { document.getElementById("game_drop").contentWindow.postMessage(args, "*") }
+    //> vl('addItem','MULT 2 (\\f x. f (f x))')
+    //> vl('clearWorkspace')
+    //> vl('saveWorkspace', 'combinators3')
+    //> vl('loadWorkspace', 'combinators3')
+
+    // === Add Item from Details hud
+    window.addEventListener("DOMContentLoaded", () => {
+        
+        // Don't propagate keypress to pygame here
+        const input = document.getElementById("hud-additem-input");
+        const stop = (e) => { e.stopPropagation(); };
+        ["keydown", "keypress", "keyup"].forEach((t) => {
+            input.addEventListener(t, stop, true);
+        });
+
+        // Handle hash params
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const ws = hashParams.get("workspace");
+        if (ws) {
+            loadWorkspace(ws);
+        }
+
+    });
+    function hudAddItem(event) {
+        event.preventDefault();
+        const input = document.getElementById("hud-additem-input");
+        const expr = (input.value || "").trim();
+        if (expr) addItem(expr);
+    }
+
+    //-----------------------------------------------------------
+
+    </script>
+
+</body>
+</html>

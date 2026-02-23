@@ -127,7 +127,7 @@ class ColorSpace:
         if 0 == var:                # Free Variable
             return 0xFF,0xFF,0xFF
 
-        elif None == var:             # Constant
+        elif None == var:             #!!! Special Constant (Gold coin)
             return 0xFF,0xFF,0x7F
 
         elif var in self.vars:

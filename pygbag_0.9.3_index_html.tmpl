@@ -229,6 +229,21 @@ config = {
            right: 10px;
            border: 1px solid black;
         }
+
+        /* Visual Lambda details hud */
+        .hud-menu {
+            position: fixed; top: 0px; right: 70px; width: 250px; z-index: 20;
+            background: rgba(10, 10, 10, 0.7); color: #f2f2f2;
+            font-family: monospace; font-size: 12px;
+            padding: 6px 8px;
+        }
+        .hud-menu a { color: #6fa8ff; }
+        .hud-menu summary { cursor: pointer; user-select: none; }
+        .hud-menu table { border-collapse: collapse; border: 0; width: 100%; }
+        .hud-menu form { margin-top: 6px; display: flex; gap: 6px; }
+        .hud-menu input { flex: 1; }
+        .hud-menu button { flex: 0 0 auto; }
+
     </style>
 
     <script>
@@ -269,6 +284,30 @@ height="{{cookiecutter.height}}px"
     </canvas>
 
     <div id=html></div>
+
+
+    <!-- Visual Lambda details hud -->
+    <div class="hud-menu">
+        <details>
+            <summary>Menu</summary>
+            <div class="menu-content">
+                <a href="https://github.com/bntre/visual-lambda" target="_blank" rel="noopener noreferrer">github.com/bntre/visual-lambda</a><br />
+                Load workspace:<br/>
+                <table><tr>
+                    <td><a href="#" onclick="loadWorkspace('library_demo'); return false;">library_demo</a></td>
+                    <td><a href="#" onclick="loadWorkspace('clear'); return false;">clear</a></td>
+                </tr><tr>
+                    <td><a href="#" onclick="loadWorkspace('puzzles'); return false;">puzzles</a></td>
+                    <td><a href="#" onclick="loadWorkspace('predecessors'); return false;">predecessors</a></td>
+                </tr></table>
+                <form onsubmit="hudAddItem(event)">
+                    <input id="hud-additem-input" type="text" placeholder="e.g. \x. x x" />
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+        </details>
+    </div>
+
 
     <div id=crt  class=bottomright >
 
@@ -388,9 +427,10 @@ frameborder="1"
 
 
 
-
+    //-----------------------------------------------------------
     // Visual Lambda stuff
-    // localStorage exchange
+
+    // === localStorage exchange
     function setStorageValue(name, newValue, separator = undefined) {
         let key = "storage_" + name;
         let value = undefined;
@@ -406,7 +446,6 @@ frameborder="1"
         }
         window.localStorage.setItem(key, value);
     }
-    
     function addItem(expression) {
         setStorageValue("addItem", expression, "|");
     }
@@ -426,6 +465,7 @@ frameborder="1"
         console.log("loadWorkspace(workspaceName) - load a workspace from localStorage, e.g. loadWorkspace('combinators3')");
     }
 
+    // === itch.io
     // Allow using browser console through an iframe on itch.io
     window.addEventListener('message', event => {
         //console.log(event);
@@ -449,8 +489,32 @@ frameborder="1"
     //> vl('saveWorkspace', 'combinators3')
     //> vl('loadWorkspace', 'combinators3')
 
+    // === Add Item from Details hud
+    window.addEventListener("DOMContentLoaded", () => {
+        
+        // Don't propagate keypress to pygame here
+        const input = document.getElementById("hud-additem-input");
+        const stop = (e) => { e.stopPropagation(); };
+        ["keydown", "keypress", "keyup"].forEach((t) => {
+            input.addEventListener(t, stop, true);
+        });
 
+        // Handle hash params
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const ws = hashParams.get("workspace");
+        if (ws) {
+            loadWorkspace(ws);
+        }
 
+    });
+    function hudAddItem(event) {
+        event.preventDefault();
+        const input = document.getElementById("hud-additem-input");
+        const expr = (input.value || "").trim();
+        if (expr) addItem(expr);
+    }
+
+    //-----------------------------------------------------------
 
     </script>
 

@@ -20,6 +20,7 @@ class FieldItem:
         pass
 
 
+
 class TextItem( FieldItem ):
     
     def __init__( self, text ):
@@ -46,16 +47,42 @@ class TextItem( FieldItem ):
 
     def pick( self, font, matrix, pos ):
         
-        vector = matrix * Vector((0,0,1,1))
-        x,y,s,_ = vector
+        x,y,_,_ = matrix * Vector((0,0,1,1))
         
         sx,sy = font.size( self.text )
         
         return x < pos.x < x+sx and  \
                y < pos.y < y+sy
-            
+
+
+
+
+class RectItem( FieldItem ):
+
+    def __init__( self, size, color ):
         
+        FieldItem.__init__( self )
+        self.refreshTransform()
+
+        self.size = size  # tuple
+        self.color = color  # str
+
+    def copy( self ):
+        copy = RectItem( self.size, self.color )
+
+        copy.position = self.position.copy()
+        copy.refreshTransform()
+
+        return copy
+
+    def refreshTransform( self ):
+        self.transform = self.position
+
+    def pick( self, matrix, pos ):
         
+        x,y,s,_ = matrix * Vector((0,0,1,1))
         
+        sx,sy = self.size
         
-        
+        return x < pos.x < x+sx*s and  \
+               y < pos.y < y+sy*s

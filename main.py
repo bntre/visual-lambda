@@ -23,7 +23,7 @@ import  refnames
 from    figure      import  Ring,Bubble,Group,Figure
 from    noke        import  Noke
 
-from    fielditem   import  TextItem
+from    fielditem   import  TextItem,RectItem
 
 import  eating
 import  construct
@@ -136,7 +136,7 @@ class Manipulator( Window ):
         Window.__init__( self, caption, windowSize )
         
         if not config.IS_WEB_PLATFORM:
-            favicon = pygame.image.load('favicon.png')
+            favicon = pygame.image.load('docs/favicon.png')
             pygame.display.set_icon(favicon)
         
 
@@ -250,15 +250,14 @@ class Manipulator( Window ):
         self.statusbar = toolbar.Statusbar()
         self.toolbars = []
 
-        ims = toolbar.ImageSet( 'toolbar_icons.png', (48,48) )
+        ims = toolbar.ImageSet( 'res/toolbar_icons.png', (48,48) )
         
         
         # Create font for Menus
         fontsize = int( config.get( 'fontsize' ) )  or  11
-        if config.IS_WEB_PLATFORM:
-            fontsize = fontsize * 3//2  #!!! fixing pygbag
         toolbar.ToolbarItem.fontsize = fontsize
-        toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
+        #toolbar.ToolbarItem.font     = pygame.font.SysFont( 'lucidaconsole', fontsize )
+        toolbar.ToolbarItem.font     = pygame.font.Font( 'res/OpenSans-Regular.ttf', fontsize )
         #toolbar.ToolbarItem.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
         toolbar.ToolbarItem.fontAntialias = True
                 
@@ -335,6 +334,10 @@ class Manipulator( Window ):
             if isinstance( item, TextItem ):
                 self.drawText( surface, item.text, matrix )
 
+            # Rect
+            if isinstance( item, RectItem ):
+                self.drawRect( surface, item.size, item.color, matrix )
+
             # Figure
             elif isinstance( item, Figure ):
         
@@ -347,14 +350,23 @@ class Manipulator( Window ):
 
 
 
-
     def drawText( self, surface, text, matrix ):
        
-        vector = matrix * Vector((0,0,1,1))
-        x,y,s,_ = tuple(map( toInt, vector ))
-       
+        x,y,s,_ = matrix * Vector((0,0,1,1))
+
+        #!!! ignore scale ?
+
         self.text( text, (x,y) )
-    
+
+
+
+    def drawRect( self, surface, size, color, matrix ):
+       
+        x,y,s,_ = matrix * Vector((0,0,1,1))
+        sx,sy = size
+
+        self.rect( (x,y), (sx*s,sy*s), color )
+
 
 
     @staticmethod
@@ -1087,6 +1099,11 @@ class Manipulator( Window ):
                     if item.pick( self.font, matrix, pos ):
                         return Selection( item )
 
+            elif isinstance( item, RectItem ):
+                if not figuresOnly:
+                    matrix = self.viewMatrix * item.transform
+                    if item.pick( matrix, pos ):
+                        return Selection( item )
             
             elif isinstance( item, Figure ):
                 

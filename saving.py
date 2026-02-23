@@ -6,7 +6,7 @@ from    debug       import  *
 
 from    lambdaparser import parser
 from    figure      import  Figure
-from    fielditem   import  TextItem
+from    fielditem   import  TextItem,RectItem
 
 from    vector      import  Vector
 
@@ -49,6 +49,11 @@ def save( manipulator, pretty = False ):
 
 
 
+def to_tuple(attr):
+    p = attr.split(',')
+    return tuple(map( float, p ))
+
+
 def load( manipulator, xmlData ):
 
     try:
@@ -76,9 +81,11 @@ def load( manipulator, xmlData ):
             i = Figure( item.getAttribute('figure') )
         elif item.hasAttribute('text'):
             i = TextItem( item.getAttribute('text') )
+        elif item.hasAttribute('rect'):
+            size = to_tuple(item.getAttribute('rect'))
+            i = RectItem( size, item.getAttribute('color') )
         if i:
-            pos = item.getAttribute('pos').split(',')
-            pos = tuple(map( float, pos ))
+            pos = to_tuple(item.getAttribute('pos'))
             pos = lastOrigin + Vector(pos)
             i.position.setTranspose( pos[0],pos[1], 1 )
             i.refreshTransform()

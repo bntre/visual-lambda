@@ -6,8 +6,13 @@ import configparser
 #-----------------------------------------------
 # Platform
 
-IS_WEB_PLATFORM = sys.platform == 'emscripten'
-#IS_WEB_PLATFORM = True  # to test web mode locally
+#!!! Testing web mode locally
+#   Use http://127.0.0.1:8000/
+#   To debug: uncomment debug_hidden = false in *html.tmpl
+
+FORCE_WEB_PLATFORM = 0
+
+IS_WEB_PLATFORM = FORCE_WEB_PLATFORM or sys.platform == 'emscripten'
 
 ALLOW_SYSTEM_CONSOLE = not IS_WEB_PLATFORM
 

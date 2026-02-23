@@ -25,9 +25,8 @@ class Window:
         pygame.display.set_caption( caption )
         
         fontsize = int( config.get( 'fontsize' ) )  or  11
-        if config.IS_WEB_PLATFORM: 
-            fontsize = fontsize * 2  #!!! fixing pygbag
-        self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
+        #self.font = pygame.font.SysFont( 'lucidaconsole', fontsize )
+        self.font = pygame.font.Font( 'res/OpenSans-Regular.ttf', fontsize )
         #self.fontAntialias = config.IS_WEB_PLATFORM  #!!! fixing pygbag
         self.fontAntialias = True
 
@@ -68,6 +67,8 @@ class Window:
     def getColor( self, col=None ):
         if type( col ) is tuple:
             return col
+        if isinstance(col, str): # allow "#rrggbb". see https://pyga.me/docs/ref/color.html
+            return col
         if None == col:
             return (0,0,0)
         return [ (255,0,0), (0,0,255), (0,255,0), (200,200,200), (100,100,100), (179,213,200) ][ col ]
@@ -82,6 +83,10 @@ class Window:
     def line( self, p0,p1, col=None ):
         col = self.getColor( col )
         pygame.draw.line( self.getSurface(), col, p0,p1 )
+
+    def rect( self, pos, size, col=None ):
+        col = self.getColor( col )
+        pygame.draw.rect( self.getSurface(), col, pygame.Rect(pos, size) )
 
     def polygon( self, ps, col=None ):
         if len(ps) < 2:
