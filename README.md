@@ -7,9 +7,7 @@
 Visual Lambda is a graphical environment and visual programming tool
 for exploring pure lambda calculus using Bubble Notation.  
 It represents lambda expressions as colorful, tree-like 2D structures
-and animates beta-reduction steps smoothly, making reductions easy to follow.
-
-**Try it live**: https://bntr.itch.io/visual-lambda
+and animates beta-reduction smoothly, making reductions easy to follow.
 
 The project started as a master's thesis (2008); see the thesis for details:
 [visual_lambda.pdf](https://bntr.planet.ee/lambda/work/visual_lambda.pdf).
@@ -17,7 +15,14 @@ The project started as a master's thesis (2008); see the thesis for details:
 This might be useful for students, educators and researchers who want
 an intuitive, interactive way to explore λ‑calculus and reduction strategies.
 
+**Try it live**: https://bntre.github.io/visual-lambda/
+
+Lambda puzzles **challenge**: https://bntre.github.io/visual-lambda/#workspace=puzzles
+
+<sub>Or alternatively: https://bntr.itch.io/visual-lambda</sub>
+
 ![Screenshot](https://raw.githubusercontent.com/bntre/visual-lambda/master/res/screenshot.png)
+
 
 ## Bubble Notation
 
@@ -39,13 +44,13 @@ Old GIF examples:
 - 'MULT 3 2' evaluation: [MULT_3_2_=_6.gif](https://bntr.planet.ee/lambda/visual_lambda_MULT_3_2_=_6.gif)
 - 'Y I' evaluation: [Y_I.gif](https://bntr.planet.ee/lambda/Y_I.gif)
 
-## Requirements
+
+## Local run
 
 Dependencies
 - Python 3.8+
 - pygame-ce 2.5.6
 
-Install and run locally:
 ```
 pip install pygame-ce==2.5.6
 python main.py
@@ -77,6 +82,5 @@ Possible directions:
 - Revisit the lazy-evaluation visualization to make it clearer and more robust.
 
 ## License
-
-- Project license: GNU Lesser General Public License v3.0.
-- This project uses Open Sans, licensed under SIL Open Font License 1.1.
+- Visual Lambda is licensed under the GNU Lesser General Public License v3.0.
+- This project also includes Open Sans, licensed under the SIL Open Font License 1.1.
