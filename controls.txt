@@ -4,8 +4,8 @@ Visual Lambda environment mouse/keyboard controls
 
 View
     Zoom                                Mouse Wheel, +/-
-    Move                                Middle mouse button, Arrow buttons
-    Refresh                             F5
+    Move                                Left mouse button, Arrow buttons
+    Refresh (colors and names)          F5
 
 
 Items on screen (lambda terms or text labels)
@@ -27,14 +27,14 @@ Construction of lambda terms
     Add free variable                   V
     
     With selected sub-term
+        Insert application before       A
+        Insert application after        S
+        Insert lambda                   L, W
         Delete                          Del
-        Insert application before       Ins or A
-        Insert application after        Ctrl+Ins or Ctrl+A
-        Insert lambda                   Alt+Ins or L
         Bind Variable/Lambda with 
-          selected Lambda/Variable      RClick or Ctrl+LClick
+          selected Lambda/Variable      Ctrl+LClick or RClick
     
-    Expand selection                    Space
+        Expand selection                Space
     
     Create application (apply)          Drop one term onto another
 
@@ -48,9 +48,9 @@ Reduction
     Full reduction                      Ctrl+Enter
 
     Modes of reduction
-        Applicative/Normal              Alt+A
-        Lazy/Pure                       Alt+L, Alt+P
-        Inside selection only           Alt+S
+        Applicative/Normal              Ctrl+N
+        Lazy/Pure                       Ctrl+L
+        Inside selection only           Ctrl+I
     
     Quick (Finger) Mode                 Q
         Pick a term for reduction
@@ -58,7 +58,7 @@ Reduction
 
 History
     Undo                                Ctrl+Z, Alt+Left, Backspace
-    Redo                                Ctrl+Y, Alt+Right           
+    Redo                                Ctrl+Y, Alt+Right
 
 Workspace
     Save                                Ctrl+S
@@ -66,4 +66,4 @@ Workspace
 
 Saving images/frames
     Save screen to png                  F12
-    Mode of export frames               Alt+E
+    Mode of export frames               Ctrl+F

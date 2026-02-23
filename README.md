@@ -5,7 +5,7 @@
 ![logo](https://bntr.planet.ee/lambda/loop_.gif)
 
 Visual Lambda is a graphical environment and visual programming tool
-for exploring pure lambda calculus using Bubble Notation.  
+for exploring untyped lambda calculus using Bubble Notation.  
 It represents lambda expressions as colorful, tree-like 2D structures
 and animates beta-reduction steps smoothly, making reductions easy to follow.
 

@@ -53,7 +53,7 @@ class Selection:
         if not noke and isinstance( item, Figure ):    # Select whole Expression if noke not specified
             self.noke = item.root().through()
 
-    def __nonzero__( self ):
+    def __bool__( self ):
         return bool( self.item )
 
     def __eq__( self, other ):
@@ -181,7 +181,8 @@ class Manipulator( Window ):
 
 
         self.keyEventProcs = {
-            K_i:            [ (0,           config.ALLOW_SYSTEM_CONSOLE and self.eventInputItem) ],
+            K_i:            [ (0,           config.ALLOW_SYSTEM_CONSOLE and self.eventInputItem),
+                              (KMOD_CTRL,   self.eventModeBySelection) ],
             K_d:            [ (0,           self.eventDeleteItem) ],
             K_c:            [ (0,           self.eventCopyItem) ],
 
@@ -192,32 +193,28 @@ class Manipulator( Window ):
             K_z:            [ (KMOD_CTRL,   self.eventUndo) ],
             K_y:            [ (KMOD_CTRL,   self.eventRedo) ],
             K_LEFT:         [ (KMOD_ALT,    self.eventUndo),
-                              (0,           lambda: self.moveView( 50, 0)) ],  # Scrolling the View
+                              (0,           lambda: self.moveView(-50, 0)) ],  # Scrolling the View
             K_RIGHT:        [ (KMOD_ALT,    self.eventRedo),
-                              (0,           lambda: self.moveView(-50, 0)) ],
-            K_UP:           [ (0,           lambda: self.moveView( 0, 50)) ],
-            K_DOWN:         [ (0,           lambda: self.moveView( 0,-50)) ],
-            
+                              (0,           lambda: self.moveView( 50, 0)) ],
+            K_UP:           [ (0,           lambda: self.moveView( 0,-50)) ],
+            K_DOWN:         [ (0,           lambda: self.moveView( 0, 50)) ],
+
             K_SPACE:        [ (0,           self.eventExpandSelection) ],
             K_DELETE:       [ (0,           self.eventDeleteNode) ],
-            K_INSERT:       [ (KMOD_ALT,    self.eventAddLambda),
-                              (KMOD_CTRL,   self.eventAddApplicationAfter),
-                              (0,           self.eventAddApplicationBefore) ],
 
-            K_s:            [ (KMOD_ALT,    self.eventModeBySelection),
+            K_q:            [ (0,           self.eventModeQuick) ],
+            K_a:            [ (0,           self.eventAddApplicationBefore) ],
+            K_w:            [ (0,           self.eventAddLambda) ],
+            K_s:            [ (0,           self.eventAddApplicationAfter),
                               (KMOD_CTRL,   config.ALLOW_SYSTEM_CONSOLE and self.eventSaveWorkspace) ],
             K_o:            [ (KMOD_CTRL,   config.ALLOW_SYSTEM_CONSOLE and self.eventLoadWorkspace) ],
             
-            K_q:            [ (0,           self.eventModeQuick) ],
-            K_a:            [ (KMOD_ALT,    self.eventModeStrategy),
-                              (KMOD_CTRL,   self.eventAddApplicationAfter),
-                              (0,           self.eventAddApplicationBefore) ],
-            K_l:            [ (KMOD_ALT,    self.eventModeLazy),
+            K_l:            [ (KMOD_CTRL,   self.eventModeLazy),
                               (0,           self.eventAddLambda) ],
             K_v:            [ (0,           self.eventAddVariable) ],
-            K_p:            [ (KMOD_ALT,    self.eventModeLazy) ],
+            K_n:            [ (KMOD_CTRL,   self.eventModeStrategy) ],
 
-            K_e:            [ (KMOD_ALT,    config.ALLOW_FILE_WRITING and self.eventExportMode) ],
+            K_f:            [ (KMOD_CTRL,   config.ALLOW_FILE_WRITING and self.eventExportMode) ],
             
             K_F1:           [ (0,           self.eventViewHelp) ],
             K_F5:           [ (0,           self.eventRefreshView) ],
@@ -266,9 +263,9 @@ class Manipulator( Window ):
           left.add( self.eventInputItem,            'Input Item from console (I)',   'Input Item' )
         left.add( None, None, '' )
         left.add( None, None, 'Reduction' )
-        left.add( self.eventModeStrategy,           'Toggle reduction strategy (Alt+A)',    ' Normal order',     ' Applicative',  lambda:self.mode.applicative )
-        left.add( self.eventModeLazy,               'Toggle calculus (Alt+L, Alt+P)',       ' Pure Lambda',      ' Lazy',         lambda:self.mode.lazy )
-        left.add( self.eventModeBySelection,        'Reduction inside selection only or the whole expression (Alt+S)',  
+        left.add( self.eventModeStrategy,           'Toggle reduction strategy (Ctrl+N)',   ' Normal order',     ' Applicative',  lambda:self.mode.applicative )
+        left.add( self.eventModeLazy,               'Toggle calculus (Ctrl+L)',             ' Pure Lambda',      ' Lazy',         lambda:self.mode.lazy )
+        left.add( self.eventModeBySelection,        'Reduction inside selection only or the whole expression (Ctrl+I)',
                                                                            ' whole expression', ' in selection', lambda:self.mode.redex )
         if config.ALLOW_SYSTEM_CONSOLE:
           left.add( None, None, '' )
@@ -280,9 +277,9 @@ class Manipulator( Window ):
         right = toolbar.Toolbar( toolbar.RIGHT )
         right.add( self.eventModeQuick,             'Quick mode: Pick for reduction. (Q)',          (ims,2,1), (ims,2,2), lambda:self.quick )
         right.add( self.eventAddVariable,           'Add a free variable to workspace (V)',         (ims,0,0) )
-        right.add( self.eventAddApplicationBefore,  'Add application before selection (Insert, A)', (ims,0,1) )
-        right.add( self.eventAddApplicationAfter,   'Add application after selection (Ctrl+Insert, Ctrl+A)', (ims,0,2) )
-        right.add( self.eventAddLambda,             'Add lambda bubble (Alt+Insert, L)',            (ims,1,2) )
+        right.add( self.eventAddApplicationBefore,  'Add application before selection (A)',         (ims,0,1) )
+        right.add( self.eventAddApplicationAfter,   'Add application after selection (S)',          (ims,0,2) )
+        right.add( self.eventAddLambda,             'Add lambda bubble (L, W)',                     (ims,1,2) )
         right.add( self.eventDeleteNode,            'Delete selected bubbles (Delete)',             (ims,1,1) )
         right.add( self.eventDeleteItem,            'Delete selected item (D)',                     (ims,1,0) )
         right.add( self.eventCopyItem,              'Copy selected item (C)',                       (ims,2,0) )
@@ -710,12 +707,15 @@ class Manipulator( Window ):
                         if item.callback():
                             self.invalidate()
                     
-                    else:
-                        if self.select( pos ):     # Select (self.dragPos set there)
-                            if self.quick:         # Try to reduce at once
-                                self.eventReduce()
-                            self.invalidate()
-                        
+                    # Item selection
+                    elif self.select( pos ):    # Select (self.dragPos set there)
+                        if self.selection and self.quick:   # Try to reduce at once
+                            self.eventReduce()
+                        self.invalidate()       # Selection changed - invalidate
+                    
+                    # Drag the view
+                    if not self.selection:
+                        self.viewMovePos = pos
                 
                 elif event.button == 3 or event.button == 1 and modCtrl:   # Right Button or Left Button with Ctrl
                     if self.selection.figure():  # Try to Reref Selected Var or Abs
@@ -733,10 +733,6 @@ class Manipulator( Window ):
                             if reref:
                                 figure.history.step( figure.expression.copy() )
                                 self.invalidate()
-                        
-                elif event.button == 2:  # Middle Button - shift the View
-                    self.viewMovePos = pos
-                    
                 
 
             if MOUSEBUTTONUP == event.type: # End Drag
@@ -768,7 +764,7 @@ class Manipulator( Window ):
                     self.dragPos = None
                 
                 # Dropping the View
-                if event.button == 2:
+                if event.button == 1:
                     self.viewMovePos = None
     
     
@@ -800,7 +796,7 @@ class Manipulator( Window ):
                         redraw = True
 
                 # Dragging the View
-                if self.viewMovePos and event.buttons[1]:
+                if self.viewMovePos and event.buttons[0]:
                     shift = Vector2(event.pos) - Vector2(self.viewMovePos)
                     self.viewMovePos = event.pos
                     self.moveView( shift.x, shift.y )
@@ -1202,13 +1198,14 @@ class Manipulator( Window ):
             self.dragPos   = pos         # Save touched Ring and cursor start Position
             return True
 
-
-        self.selection = Selection( None )    # Deselect
-        self.selectionChanged = True
         self.dragPos   = None
 
-        return True
-        
+        if self.selection:
+            self.selection = Selection( None )    # Deselect
+            self.selectionChanged = True
+            return True
+
+        return False
 
     
     def drag( self, pos ):

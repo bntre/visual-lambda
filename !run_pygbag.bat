@@ -2,7 +2,7 @@
 @rem       https://pygame-web.github.io/wiki/publishing/itch.io/
 
 
-set DEST=visual-lambda-2.2
+set DEST=visual-lambda-2.2.1
 @rem  It will be also the name of .apk file
 
 

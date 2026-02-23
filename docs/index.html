@@ -3,14 +3,14 @@
 # The template is based on https://github.com/pygame-web/pygbag/blob/main/static/default.tmpl
 
 print("""
-Loading Visual Lambda from visual-lambda-2.2.apk
+Loading Visual Lambda from visual-lambda-2.2.1.apk
     Pygbag Version : 0.9.3
     Template Version : 0.9.3
     Python  : 3.12
     CDN URL : https://pygame-web.github.io/cdn/0.9.3/
     Screen  : 1280x720
     Title   : Visual Lambda
-    Folder  : visual-lambda-2.2
+    Folder  : visual-lambda-2.2.1
     Authors : pgw
     SPDX-License-Identifier: cookiecutter.spdx
 
@@ -31,22 +31,22 @@ async def custom_site():
     platform.window.canvas.style.visibility = "visible"
 
 
-    bundle = "visual-lambda-2.2"
+    bundle = "visual-lambda-2.2.1"
 
     # the C or js loader could do that but be explicit.
-    appdir = Path(f"/data/data/{bundle}") # /data/data/visual-lambda-2.2
+    appdir = Path(f"/data/data/{bundle}") # /data/data/visual-lambda-2.2.1
     appdir.mkdir()
 
 
     # unpack filesystem from compressed archive into work dir
     if platform.window.location.host.find('.itch.zone')>0:
         import zipfile
-        async with platform.fopen("visual-lambda-2.2.apk", "rb") as archive:
+        async with platform.fopen("visual-lambda-2.2.1.apk", "rb") as archive:
             with zipfile.ZipFile(archive) as zip_ref:
                 zip_ref.extractall(appdir.as_posix())
     else:
         import tarfile
-        async with platform.fopen("visual-lambda-2.2.tar.gz", "rb") as archive:
+        async with platform.fopen("visual-lambda-2.2.1.tar.gz", "rb") as archive:
             tar = tarfile.open(fileobj=archive, mode="r:gz")
             tar.extractall(path=appdir.as_posix(), filter='tar')
             tar.close()
@@ -131,7 +131,7 @@ config = {
     gui_divider : 2,
     ume_block : 1,
     can_close : 0,
-    archive : "visual-lambda-2.2",
+    archive : "visual-lambda-2.2.1",
     gui_debug : 2,
     cdn : "https://pygame-web.github.io/cdn/0.9.3/",
     autorun : 0,

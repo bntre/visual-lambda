@@ -9,6 +9,10 @@ import  let
 
 
 
+def hasParent( node ):
+    p = node.parent
+    return p and p.type is not None  # skip fake parent (see made in withRoot)
+
 
 def applicate( dropped, node ):
     debug('con','dropped',dropped,'-->',node)
@@ -16,8 +20,8 @@ def applicate( dropped, node ):
     #appl = let.Application( func= func, arg= node )
     #node.subst( appl )
 
-    #!!! why? it seems like bug when dropping to a free variable (single circle): no application occured
-    if VAR == node.type and 0 == node.ref:   # Replace Free Variable to Dropped Expression
+    #!!! Doubtful UX: if it's free variable (but not a single one) - replace it with dropped node
+    if VAR == node.type and 0 == node.ref and hasParent( node ):   # Replace Free Variable to Dropped Expression
         node.subst( dropped )
     
     else:
