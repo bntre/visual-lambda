@@ -16,12 +16,12 @@
   <item pos="0,-7" figure="(\f. f G) X" origin="1" />       <item pos="26,4" rect="8,8" color="#EEEEEE" />
                                                             <item pos="30,0" figure="I" />
 
-  <item pos="0,-10" figure="(\f. f f G) X" origin="1" />    <item pos="26,4" rect="8,8" color="#EEEEEE" />
-                                                            <item pos="30,0" figure="F" />
+  <item pos="0,-10" figure="(\f. f G f) X" origin="1" />    <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="T" />
 
-  <item pos="0,-10" figure="(\f. f (f f f f) (f f f f) (f f f G)) X" origin="1" />
+  <item pos="0,-10" figure="(\f. f (f f f f) (f f G f) (f f f f)) X" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
-                                                            <item pos="30,0" figure="\a b c. c" />
+                                                            <item pos="30,0" figure="\a b c. b" />
 
   <item pos="0,-10" figure="(\g. (\f. f (f f f f) (f f G f)) g g) X" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
