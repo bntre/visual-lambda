@@ -80,6 +80,18 @@ For the full list of keyboard shortcuts and detailed controls, see [controls.txt
 The repository includes a small library of predefined expressions that
 you can paste into the console: see [library.txt](library.txt).
 
+
+## Puzzles
+
+Visual Lambda also includes a small interactive challenge:  
+**Lambda Puzzles** https://bntre.github.io/visual-lambda/#workspace=puzzles
+
+The puzzle set contains several tasks in Bubble Notation with gradually increasing difficulty.  
+In each puzzle, a golden coin (represented as a yellow free variable) is hidden inside a lambda term.  
+Your goal is to construct another term (a "key") and apply it in such a way that, after full beta-reduction, only the coin remains.
+
+https://github.com/user-attachments/assets/6667104c-cca0-4133-ba80-d897f9726969
+
 ## Related work
 
 - [Programming with Visual Expressions, Wayne Citrin](https://web.archive.org/web/20110524135539/users.encs.concordia.ca/~haarslev/vl95www/html-papers/citrin/citrin.html)
@@ -99,4 +111,5 @@ Possible directions:
 ## License
 - Visual Lambda is licensed under the GNU Lesser General Public License v3.0.
 - This project also includes Open Sans, licensed under the SIL Open Font License 1.1.
+
 
