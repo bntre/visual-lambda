@@ -58,7 +58,22 @@ python main.py
 
 ## Controls
 
-See the full UI control reference in [controls.txt](controls.txt).
+The workspace contains lambda terms and text labels. You can drag any of them with the mouse.
+
+The last touched term becomes **selected**. Selected subterms are highlighted with a red outline.
+
+You can modify a whole term or any selected subterm using the right toolbar.  
+Hover over buttons to see tooltips and keyboard shortcuts.
+
+Use the **Play** button at the bottom to perform a beta-reduction step.  
+Each term keeps its own reduction history, so you can undo and redo steps.
+
+To create an application, drag one term onto another subterm (the target area is highlighted in dark red).  
+Note: the dropped term loses its reduction history - make a copy first if you want to preserve it.
+
+Lambda mode and reduction strategy can be changed in the left menu.
+
+For the full list of keyboard shortcuts and detailed controls, see [controls.txt](controls.txt).
 
 ## Expression library
 
@@ -84,3 +99,4 @@ Possible directions:
 ## License
 - Visual Lambda is licensed under the GNU Lesser General Public License v3.0.
 - This project also includes Open Sans, licensed under the SIL Open Font License 1.1.
+
