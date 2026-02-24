@@ -40,11 +40,11 @@
                                                             <item pos="30,0" figure="\a. a f f f I f f" />
 
   <item pos="0,-10" figure="X (\f. f (\g. g (\h. h G)))" origin="1" />
-                                                            <item pos="24,5" rect="12,10" color="#EEEEEE" />
+                                                            <item pos="25,5" rect="10,10" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a. a (\b. b (\c. c I))" />
 
   <item pos="0,-10" figure="X (\f. f (\g. g g G) f)" origin="1" />
-                                                            <item pos="25,5" rect="10,10" color="#EEEEEE" />
+                                                            <item pos="25,4.9" rect="10,10" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a. a (\b c. b F)" />
 
   <item pos="0,-10" figure="(\a. a a (\b. b G)) X" origin="1" />
