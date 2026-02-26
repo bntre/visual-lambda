@@ -1,6 +1,5 @@
+from __future__ import annotations
 
-
-import  datetime
 import  asyncio
 
 import  pygame
@@ -20,10 +19,10 @@ from    window      import  Window
 import  let
 import  refnames
 
-from    figure      import  Ring,Bubble,Group,Figure
+from    figure      import  Ring,Bubble,Group,Figure,Drawn
 from    noke        import  Noke
 
-from    fielditem   import  TextItem,RectItem
+from    fielditem   import  FieldItem,TextItem,RectItem
 
 import  eating
 import  construct
@@ -34,22 +33,23 @@ import  saving
 
 from    events      import  *
 
+
 if config.IS_WEB_PLATFORM:
-  import  localstorage
+    import localstorage
+    import platform  # for pygbag platform.window
 
-
-
-def strDate():
-    return datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-
+if config.ALLOW_FILE_WRITING:
+    import datetime
+    def strDate():
+        return datetime.datetime.now().strftime('%y%m%d_%H%M%S')
 
 
 class Selection:
     "Selection. For selection, highlight, picking"
     
     def __init__( self, item, noke= None ):
-        self.item = item
-        self.noke = noke
+        self.item: FieldItem = item
+        self.noke: Noke = noke
         if not noke and isinstance( item, Figure ):    # Select whole Expression if noke not specified
             self.noke = item.root().through()
 
@@ -74,7 +74,7 @@ class Selection:
 
 def needSelectedItem( eventProc ):
     
-    def standartEventProc( self ):
+    def standartEventProc( self: Manipulator ):
         if self.selection:
             return eventProc( self, self.selection.item )
         
@@ -83,7 +83,7 @@ def needSelectedItem( eventProc ):
 
 def needSelectedFigure( eventProc ):
     
-    def standartEventProc( self ):
+    def standartEventProc( self: Manipulator ):
         figure = self.selection.figure()
         if figure:
             noke = self.selection.noke
@@ -94,7 +94,7 @@ def needSelectedFigure( eventProc ):
 
 def assertNoEating( eventProc ):
     
-    def standartEventProc( self, figure, noke ):
+    def standartEventProc( self: Manipulator, figure, noke ):
         if not figure.eating:
             return eventProc( self, figure, noke )
         
@@ -103,7 +103,7 @@ def assertNoEating( eventProc ):
 
 def rebuildAfter( eventProc ):
     
-    def standartEventProc( self ):
+    def standartEventProc( self: Manipulator ):
         figure = eventProc( self )          # Do eventProc
         if isinstance( figure, Figure ):
             figure.clean()                  # Rebuild after
@@ -116,7 +116,7 @@ def rebuildAfter( eventProc ):
 
 def stopNonstop( eventProc ):
     
-    def standartEventProc( self ):
+    def standartEventProc( self: Manipulator ):
         if self.nonstop:
             self.nonstop = False
             debug(4, "stop nonstop!")
@@ -238,9 +238,6 @@ class Manipulator( Window ):
         if config.ALLOW_SYSTEM_CONSOLE:
             pygame.time.set_timer(SYSTEMCONSOLE_TIMEREVENT, 100)
 
-        if config.IS_WEB_PLATFORM:
-            self._next_localstorage_poll_ms = 0
-
         #-----------------------------------------------------
         # Prepare toolbars
         
@@ -301,14 +298,6 @@ class Manipulator( Window ):
             sleepSec = 0  # pygbag asked for 0
     
         while True:
-            
-            if config.IS_WEB_PLATFORM:
-                # set_timer is not implemented on WASM yet.
-                now_ms = pygame.time.get_ticks()
-
-                if now_ms >= self._next_localstorage_poll_ms:
-                    self.handleLocalStorageCommands()
-                    self._next_localstorage_poll_ms = now_ms + 500
 
             for e in pygame.event.get():
                 self.handleEvent( e )
@@ -385,7 +374,7 @@ class Manipulator( Window ):
             pygame.draw.circle( surface, col, pos, r, width )
 
     
-    def drawRing( self, surface, figure, drawn, size ):
+    def drawRing( self, surface, figure: Figure, drawn: Drawn, size ) -> bool:
         
         # Det position
         pos = drawn.ring.pos.x, drawn.ring.pos.y
@@ -478,18 +467,18 @@ class Manipulator( Window ):
 
 
 
-    def drawHole( self, figure, noke, fill, r ):
+    def drawHole( self, figure: Figure, noke: Noke, fill, r ):
 
         debug('draw', 'draw hole, noke:', noke )
 
         # Get Bubble of Abs
-        bubble = noke()
+        bubble: Bubble = noke()
         if not bubble:  return                  # Abs is inside Abstraction - without any application
 
         # Get Root of Childs for eating
         if not bubble.childs:  return           #  ?? abs must be Redex?
         #child = bubble.childs[0]()
-        arg = noke.up()['arg']                  # Get Noke of argument of Redex
+        arg: Noke = noke.up()['arg']                  # Get Noke of argument of Redex
         
         
         # Size
@@ -515,7 +504,7 @@ class Manipulator( Window ):
                 #surface.fill( (111,88,33), pygame.Rect(10,10,20,60) )
             
         
-            done = self.drawRing( surface, figure, drawn, size )
+            done: bool = self.drawRing( surface, figure, drawn, size )
         
             # Send data into Bubble.ringsToDraw() generator
             Figure.drawing['done'] = done
@@ -539,7 +528,7 @@ class Manipulator( Window ):
         return surface
         
     
-    def drawFading( self, fade, fill, stroke, r ):
+    def drawFading( self, fade, fill, stroke, r ) -> pygame.Surface:
 
         # Size
         d = toInt( r*2 )
@@ -846,7 +835,7 @@ class Manipulator( Window ):
             self.consoleInput('Input Text (quoted) or Expression to add >> ', self.onInputItem)
             
     def onInputItem( self, expression ):
-        # expression got from system console or from localStorage exchange
+        # expression got from system console or JS
         if expression:
             if expression[0] in ('"',"'"):
                 item = TextItem( expression.strip("\"'") )
@@ -885,14 +874,14 @@ class Manipulator( Window ):
     @stopNonstop
     @needSelectedFigure
     @assertNoEating
-    def eventReduce( self, figure, noke ):
+    def eventReduce( self, figure: Figure, noke ):
         if self.reduce( figure ):
             self.invalidate()
     
     @stopNonstop
     @needSelectedFigure
     @assertNoEating
-    def eventNonstop( self, figure, noke ):
+    def eventNonstop( self, figure: Figure, noke ):
         self.nonstop = True
         if self.reduce( figure ):
             self.invalidate()
@@ -902,7 +891,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventUndo( self, figure, noke ):
+    def eventUndo( self, figure: Figure, noke ):
         expression = figure.history.undo()
         if expression:
             figure.expression = expression.copy()
@@ -914,7 +903,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventRedo( self, figure, noke ):
+    def eventRedo( self, figure: Figure, noke ):
         expression = figure.history.redo()
         if expression:
             figure.expression = expression.copy()
@@ -927,7 +916,7 @@ class Manipulator( Window ):
     # Construct
 
     @needSelectedFigure
-    def eventExpandSelection( self, figure, noke ):
+    def eventExpandSelection( self, figure: Figure, noke ):
         up = noke.up()
         if up.node != self.selection.item.expression:   # Do not select Root
             self.selection.noke = up
@@ -937,7 +926,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventDeleteNode( self, figure, noke ):
+    def eventDeleteNode( self, figure: Figure, noke ):
         construct.delete( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure )
@@ -947,7 +936,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventAddLambda( self, figure, noke ):
+    def eventAddLambda( self, figure: Figure, noke ):
         abs = construct.addLambda( noke.node )
         figure.history.step( figure.expression.copy() )
         figure.colorspace.add( None, [[abs]] )      # ??
@@ -958,7 +947,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventAddApplicationBefore( self, figure, noke ):
+    def eventAddApplicationBefore( self, figure: Figure, noke ):
         construct.applicationBefore( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure, noke.up() )
@@ -968,7 +957,7 @@ class Manipulator( Window ):
     @rebuildAfter
     @needSelectedFigure
     @assertNoEating
-    def eventAddApplicationAfter( self, figure, noke ):
+    def eventAddApplicationAfter( self, figure: Figure, noke ):
         construct.applicationAfter( noke.node )
         figure.history.step( figure.expression.copy() )
         self.selection = Selection( figure, noke.up() )
@@ -991,39 +980,36 @@ class Manipulator( Window ):
     # Save/Load Workspace
     if config.ALLOW_SYSTEM_CONSOLE:  # Save to/Load from file
     
-        def eventLoadWorkspace( self ):
+        def eventLoadWorkspace( self ):  # from self.keyEventProcs
             self.consoleInput('Input name of Workspace to load >> ', self.onLoadWorkspaceFileName )
         def onLoadWorkspaceFileName( self, workspaceName ):
             if workspaceName and saving.load_from_file( self, workspaceName + ".xml" ):
                 self.invalidate()
 
-        def eventSaveWorkspace( self ):
+        def eventSaveWorkspace( self ):  # from self.keyEventProcs
             self.consoleInput('Input name to save Workspace >> ', self.onSaveWorkspaceFileName )
         def onSaveWorkspaceFileName( self, workspaceName ):
             if workspaceName:
                 saving.save_to_file( self, workspaceName + ".xml" )
     
+
     if config.IS_WEB_PLATFORM:  # Save to/Load from localStorage
         
-        def handleLocalStorageCommands( self ):
-            # Check if user has called a browser console command, e.g. addItem('\\x. x x')
-            localstorage.handle_storage('addItem',          self.onInputItem, "|")
-            localstorage.handle_storage('clearWorkspace',   self.onClearWorkspace)
-            localstorage.handle_storage('saveWorkspace',    self.onSaveWorkspaceName)
-            localstorage.handle_storage('loadWorkspace',    self.onLoadWorkspaceName)
+        def fromJs_addItem( self, expr ):
+            self.onInputItem( expr )
 
-        def onClearWorkspace( self, _ ):
+        def fromJs_clearWorkspace( self ):
             if saving.load_from_file( self, "clear.xml" ):
                 self.invalidate()
         
-        def onSaveWorkspaceName( self, workspaceName ):
+        def fromJs_saveWorkspace( self, workspaceName ):
             if not workspaceName: return
             xmlData = saving.save( self, pretty = True )
             if xmlData:
                 key = "workspace_%s" % workspaceName
                 localstorage.save_value(key, xmlData)
-            
-        def onLoadWorkspaceName( self, workspaceName ):
+        
+        def fromJs_loadWorkspace( self, workspaceName ):
             if not workspaceName: return
             key = "workspace_%s" % workspaceName
             xmlData = localstorage.load_value(key)
@@ -1031,6 +1017,14 @@ class Manipulator( Window ):
                 self.invalidate()
             elif saving.load_from_file( self, workspaceName + ".xml" ):  # allow loading included workspaces
                 self.invalidate()
+
+        def fromJs_loadWorkspaceXml( self, xmlData ):
+            if xmlData and saving.load( self, xmlData ):
+                self.invalidate()
+
+        def fromJs_requestWorkspaceXml( self ):
+            xmlData = saving.save( self, pretty = False )
+            platform.window.fromPy_onWorkspaceXml(xmlData)  # call JS function
 
 
     if config.ALLOW_FILE_WRITING:
@@ -1319,18 +1313,26 @@ class Manipulator( Window ):
             
     
     
-    def pickToolbarItem( self, pos ):        
+    def pickToolbarItem( self, pos ):
         for t in self.toolbars:
             item = t.pick( pos, self.size )
             if item:
                 return item
-        
+
+
+
+_manipulator = None  # we use it to call from JS via Module.PyRun_SimpleString
 
 
 def main():
-    asyncio.run(
-        Manipulator('Visual Lambda').run()
-    )
+    global _manipulator
+    _manipulator = Manipulator('Visual Lambda')
+
+    if config.IS_WEB_PLATFORM:
+        # Let JS know _manipulator is ready to handle JS calls
+        platform.window.fromPy_onManipulatorReady()
+
+    asyncio.run(_manipulator.run())
 
 
 if __name__ == '__main__':

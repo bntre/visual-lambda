@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import  copy
 
@@ -14,12 +15,12 @@ from    vector      import  *
 
 class Ring:
 
-    unit = None     # Unit-Ring as constant
+    unit: Ring = None     # Unit-Ring as constant
 
-    def __init__( self, pos, r ):
+    def __init__( self, pos: Vector2, r: float ):
         "Create Ring from Position and Radius  or  from 4-Vector"
-        self.pos = pos and Vector2( pos )
-        self.r   = r
+        self.pos: Vector2 = pos and Vector2( pos )
+        self.r:   float   = r
         
     def __repr__( self ):
         return 'Ring(%s, %s)' % (repr(self.pos), repr(self.r))

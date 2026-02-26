@@ -31,7 +31,7 @@ def save( manipulator, pretty = False ):
         item = doc.createElement('item')
 
         pos = i.position * Vector((0,0,1,1))
-        item.setAttribute( 'pos', '%f,%f' % (pos[0],pos[1]) )
+        item.setAttribute( 'pos', '%.2f,%.2f' % (pos[0],pos[1]) )
         
         if isinstance( i, Figure ):
             refnames.reset()

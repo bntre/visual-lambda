@@ -16,19 +16,6 @@ else:
     raise Exception("LocalStorage only available for Web")
 
 
-def handle_storage(name, proc, separator = None):
-    key = "storage_%s" % name
-    storageValue = window.localStorage.getItem(key)
-    
-    if not storageValue: return
-    
-    window.localStorage.setItem(key, "")
-    
-    values = separator and storageValue.split(separator) or (storageValue,)
-    for v in values:
-        proc(v)
-
-
 def save_value(key, value):
     window.localStorage.setItem(key, value)
     

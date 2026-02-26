@@ -240,7 +240,8 @@ class Variable( Expression ):
 
 
     def __repr__( self ):
-        return  self.ref and self.ref.name()  or 'O'
+        return self.ref and self.ref.name() \
+            or None == self.ref and 'G' or 'O'
 
     # References
 
@@ -444,7 +445,7 @@ class Abstraction( Expression ):
         vars = []
         while abs and ABS == abs.type:       # Represent sequence of Abstractions at once
             if debugTag('refs'):
-                vars.append( ('[%d]' % abs.refs) + self.name() )
+                vars.append( ('[%d]' % abs.refs) + abs.name() )
             else:
                 vars.append( abs.name() )
             abs = abs.expr
@@ -585,7 +586,7 @@ class Application( Expression ):
 
 
 
-def reduce( expr, mode=None ):
+def reduce( expr: Expression, mode=None ):
 
     mode = mode or Mode()
     print("mode:", mode.__dict__)
@@ -603,7 +604,7 @@ def reduce( expr, mode=None ):
 
 
 
-def printClosed( expr ):
+def printClosed( expr: Expression ):
     "For test: print closed Sub-expressions"
     vars, gs = expr.getClosed()
     print(expr)

@@ -1,30 +1,31 @@
-
-import  copy
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from    debug       import  *
 from    common      import  *
 
 from    let         import  *
 
-import  figure
+if TYPE_CHECKING:
+  from  figure      import Bubble
 
-        
-        
+
+
 def addkey( var, key ):
-	return (var,) + key
+    return (var,) + key
 
 def getkey( key ):
-	return key[0], key[1:]
+    return key[0], key[1:]
 
 
 
-    
+
 class Noke:
 
     
     def __init__( self, node, key=() ):
-        self.node = node
-        self.key  = key
+        self.node: Node = node
+        self.key = key
 
     def __repr__( self ):
         return 'Noke( %s, %s )' % ( self.node, self.key )
@@ -33,7 +34,7 @@ class Noke:
         return self.node == other.node and  \
                self.key  == other.key
 
-    def __call__( self ):
+    def __call__( self ) -> Bubble:
         return self.get()
 
     def __getitem__( self, attr ):
@@ -42,10 +43,10 @@ class Noke:
 
 
 
-    def set( self, bubble ):
+    def set( self, bubble: Bubble ):
         self.node.fission[ self.key ] = bubble
 
-    def get( self ):
+    def get( self ) -> Bubble:
         try:
             return self.node.fission[ self.key ]
         except KeyError: 
@@ -84,7 +85,7 @@ class Noke:
 
 
 
-    def down( self, attr ):
+    def down( self, attr ) -> Noke:
         """
         Moves Noke pointer down through Tree.
         For jumping to 'ref' use Noke.ref()
@@ -102,7 +103,7 @@ class Noke:
         return Noke( node,key )     # Create new Noke
         
     
-    def ref( self ):
+    def ref( self ) -> Noke:
         "Jump up to '.ref' (referenced Let or Abs)"
         target = self.node.ref
 
@@ -116,7 +117,7 @@ class Noke:
         return self
 
 
-    def through( self ):
+    def through( self ) -> Noke:
         "Skips Let-Expressions and Let-bound Variables"
 
         node = self.node
@@ -135,7 +136,7 @@ class Noke:
 
 
 
-    def stepUp( self ):
+    def stepUp( self ) -> Noke:
         "Moves Noke pointer up through Tree. Does not skip Let-s"
         
         key  = self.key
@@ -149,7 +150,7 @@ class Noke:
 
 
 
-    def up( self ):   # Rename to throughUp() ??
+    def up( self ) -> Noke:   # Rename to throughUp() ??
         "Moves Noke pointer up through Tree. Skips Let-Expressions"
         
         key  = self.key
@@ -171,7 +172,7 @@ class Noke:
 
 
 
-    def skipLambdas( noke ):
+    def skipLambdas( noke ) -> Noke:
         
         while ABS == noke.node.type:
             noke = noke['expr'].through()

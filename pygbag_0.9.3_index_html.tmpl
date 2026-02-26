@@ -291,8 +291,8 @@ height="{{cookiecutter.height}}px"
         <details>
             <summary>Menu</summary>
             <div class="menu-content">
-                <a href="https://github.com/bntre/visual-lambda" target="_blank" rel="noopener noreferrer">github.com/bntre/visual-lambda</a><br />
-                Load workspace:<br/>
+                <p><a href="https://github.com/bntre/visual-lambda" target="_blank" rel="noopener noreferrer">github.com/bntre/visual-lambda</a></p>
+                <p>Load workspace:<br/>
                 <table><tr>
                     <td><a href="#" onclick="loadWorkspace('library_demo'); return false;">library_demo</a></td>
                     <td><a href="#" onclick="loadWorkspace('clear'); return false;">clear</a></td>
@@ -300,6 +300,8 @@ height="{{cookiecutter.height}}px"
                     <td><a href="#" onclick="loadWorkspace('puzzles'); return false;">puzzles</a></td>
                     <td><a href="#" onclick="loadWorkspace('predecessors'); return false;">predecessors</a></td>
                 </tr></table>
+                </p>
+                <p>Save workspace: <button onclick="requestWorkspaceXml()">As url</button></p>
                 <form onsubmit="hudAddItem(event)">
                     <input id="hud-additem-input" type="text" placeholder="e.g. \x. x x" />
                     <button type="submit">Add</button>
@@ -430,34 +432,57 @@ frameborder="1"
     //-----------------------------------------------------------
     // Visual Lambda stuff
 
-    // === localStorage exchange
-    function setStorageValue(name, newValue, separator = undefined) {
-        let key = "storage_" + name;
-        let value = undefined;
-        if (separator) {
-            value = window.localStorage.getItem(key);
-            if (value) {
-                value += separator + newValue;
-            } else {
-                value = newValue;
-            }
+    // === Calls: JS <-> Python
+    let _isManipulatorReady = false;  // set when pygame calls fromPy_onManipulatorReady
+    function callPython(expr) {
+        if (_isManipulatorReady) {
+            console.log("calling python:", expr);
+            Module.PyRun_SimpleString(expr);
         } else {
-            value = newValue;
+            console.log("calling python error: Lambda Manipulator is not ready");
         }
-        window.localStorage.setItem(key, value);
     }
     function addItem(expression) {
-        setStorageValue("addItem", expression, "|");
+        callPython(`_manipulator.fromJs_addItem(${JSON.stringify(expression)})`);
     }
     function clearWorkspace() {
-        setStorageValue("clearWorkspace", "1");
+        callPython('_manipulator.fromJs_clearWorkspace()');
     }
     function saveWorkspace(workspaceName) {
-        setStorageValue("saveWorkspace", workspaceName);
+        callPython(`_manipulator.fromJs_saveWorkspace(${JSON.stringify(workspaceName)})`);
     }
     function loadWorkspace(workspaceName) {
-        setStorageValue("loadWorkspace", workspaceName);
+        callPython(`_manipulator.fromJs_loadWorkspace(${JSON.stringify(workspaceName)})`);
     }
+    function loadWorkspaceXml(workspaceXml) {
+        callPython(`_manipulator.fromJs_loadWorkspaceXml(${JSON.stringify(workspaceXml)})`);
+    }
+    function requestWorkspaceXml() {
+        callPython('_manipulator.fromJs_requestWorkspaceXml()'); // wait for fromPy_onWorkspaceXml
+    }
+    function fromPy_onWorkspaceXml(xml) {
+        const base64 = btoa(xml);
+        const wsParam = encodeURIComponent(base64);
+        window.location.hash = `workspace=${wsParam}`;
+    }
+    function fromPy_onManipulatorReady() {
+        console.log('fromPy_onManipulatorReady');
+        _isManipulatorReady = true;
+
+        // Handle hash params
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const wsParam = hashParams.get("workspace");
+        if (wsParam) {
+            const ws = decodeURIComponent(wsParam);
+            if (ws.length < 100) { // workspace name, !!! hacky
+                loadWorkspace(ws);
+            } else {
+                const xml = atob(ws); // decode from base64
+                loadWorkspaceXml(xml);
+            }
+        }
+    }
+
     function help() {
         console.log("addItem(expression) - add an item by expression, e.g. addItem('\\x. x x')");
         console.log("clearWorkspace() - clear the workspace");
@@ -482,7 +507,7 @@ frameborder="1"
         }
     });
     
-    // Then in browser console:
+    // Then in browser console (on itch.io):
     //> function vl(...args) { document.getElementById("game_drop").contentWindow.postMessage(args, "*") }
     //> vl('addItem','MULT 2 (\\f x. f (f x))')
     //> vl('clearWorkspace')
@@ -490,29 +515,32 @@ frameborder="1"
     //> vl('loadWorkspace', 'combinators3')
 
     // === Add Item from Details hud
-    window.addEventListener("DOMContentLoaded", () => {
-        
-        // Don't propagate keypress to pygame here
-        const input = document.getElementById("hud-additem-input");
-        const stop = (e) => { e.stopPropagation(); };
-        ["keydown", "keypress", "keyup"].forEach((t) => {
-            input.addEventListener(t, stop, true);
-        });
-
-        // Handle hash params
-        const hashParams = new URLSearchParams(window.location.hash.slice(1));
-        const ws = hashParams.get("workspace");
-        if (ws) {
-            loadWorkspace(ws);
-        }
-
-    });
     function hudAddItem(event) {
         event.preventDefault();
         const input = document.getElementById("hud-additem-input");
         const expr = (input.value || "").trim();
         if (expr) addItem(expr);
     }
+
+    // === Don't propagate some events to pygame
+    window.addEventListener('keydown', (e) => {
+        const intercept = (
+            e.key === 'Escape' ||
+            e.key === 'F1' || e.key === 'F11' || e.key === 'F12' ||
+            (e.shiftKey && e.key === 'F5')  // Allow to reload the page
+        );
+        if (intercept) {
+            e.stopPropagation();
+        }
+    }, true);
+    window.addEventListener("DOMContentLoaded", () => {
+        // Don't propagate keypress on input
+        const input = document.getElementById("hud-additem-input");
+        const stop = (e) => { e.stopPropagation(); };
+        ["keydown", "keypress", "keyup"].forEach((t) => {
+            input.addEventListener(t, stop, true);
+        });
+    });
 
     //-----------------------------------------------------------
 

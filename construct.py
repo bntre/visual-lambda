@@ -9,7 +9,7 @@ import  let
 
 
 
-def hasParent( node ):
+def hasParent( node: Node ):
     p = node.parent
     return p and p.type is not None  # skip fake parent (see made in withRoot)
 

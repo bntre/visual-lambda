@@ -7,7 +7,7 @@ K = \x y. x
 S = \x y z. x z (y z)
 
 Y = \f. (\x. f (x x)) (\x. f (x x))
-O = (\x y. y (x x y)) (\x y. y (x x y))
+Om = (\x y. y (x x y)) (\x y. y (x x y))
 
 LOOP = (\x. x x) (\x. x x)
 

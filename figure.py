@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import  math
 
@@ -11,6 +13,9 @@ from    ring        import  Ring
 from    let         import  *
 from    noke        import  *
 from    cache       import  Cache
+
+if TYPE_CHECKING:
+  from  eating      import Fading
 
 from    lambdaparser import parse
 
@@ -28,7 +33,7 @@ class Drawn:
     "Class of Drawn Ring. Output of Bubble.ringsToDraw()"
     
     def __init__( self, noke, ring, fade= None ):
-        self.noke = noke
+        self.noke: Noke = noke
         self.ring = ring
         self.fade = fade
 
@@ -57,11 +62,11 @@ class Bubble:
     def __init__( self ):
 
         # Group Topology
-        self.parent = None     # Noke  # not Bubble: for Group.buildGeometry()
+        self.parent: Noke = None     # Noke  # not Bubble: for Group.buildGeometry()
         self.childs = []       # Nokes
         self.upper  = False    # Upper level - first child
 
-        self.group  = None     # Parent Group of Bubble
+        self.group: Group = None     # Parent Group of Bubble
 
         # Geometry and Correction
         self.ring   = Ring((0,0),1)
@@ -73,7 +78,7 @@ class Bubble:
 
         
         # Eating
-        self.fading = None      # Fading object
+        self.fading: Fading = None      # Fading object
 
 
     def __repr__( self ):
@@ -265,7 +270,7 @@ class Group:
 
     def __init__( self ):
         
-        self.rootnoke = None
+        self.rootnoke: Noke = None
         
         # Bounding Ring
         self.boundingRing      = None
@@ -427,7 +432,7 @@ class Figure( FieldItem ):
         self.transform = self.position * TransformMatrix( ring= self.sizeRing )
         
             
-    def root( self ):
+    def root( self ) -> Noke:
         "Root Noke of Figure"
         return Noke( self.expression )['expr']
         
@@ -640,7 +645,7 @@ class Figure( FieldItem ):
             node.fission = {}
 
     
-    def ringsToDraw( self, matrix, noke= None ):   # ?? move to Noke class
+    def ringsToDraw( self, matrix, noke: Noke = None ):   # ?? move to Noke class
         
         noke = noke or self.root()
 
