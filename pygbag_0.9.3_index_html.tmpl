@@ -196,7 +196,7 @@ config = {
             font-family: arial;
             margin: 0;
             padding: none;
-            background-color:powderblue;
+            /* background-color:powderblue; */
         }
 
         .topright{
@@ -432,6 +432,22 @@ frameborder="1"
     //-----------------------------------------------------------
     // Visual Lambda stuff
 
+    async function compressAndEncode(xmlString) {
+        const stream = new Blob([xmlString]).stream();
+        const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+        const response = new Response(compressedStream);
+        const buffer = await response.arrayBuffer();
+        return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    }
+    async function decodeAndDecompress(base64String) {
+        const binaryString = atob(base64String);
+        const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+        const decompressedStream = new Blob([bytes]).stream()
+            .pipeThrough(new DecompressionStream('gzip'));
+        const response = new Response(decompressedStream);
+        return await response.text();
+    }
+
     // === Calls: JS <-> Python
     let _isManipulatorReady = false;  // set when pygame calls fromPy_onManipulatorReady
     function callPython(expr) {
@@ -461,24 +477,30 @@ frameborder="1"
         callPython('_manipulator.fromJs_requestWorkspaceXml()'); // wait for fromPy_onWorkspaceXml
     }
     function fromPy_onWorkspaceXml(xml) {
-        const base64 = btoa(xml);
-        const wsParam = encodeURIComponent(base64);
-        window.location.hash = `workspace=${wsParam}`;
+        compressAndEncode(xml)
+            .then(base64 => {
+                // Update url hash param
+                const wsParam = encodeURIComponent(base64);
+                window.location.hash = `workspace=${wsParam}`;
+                //!!! There is url length limit for pygbag ~2kb
+            });
     }
-    function fromPy_onManipulatorReady() {
+    function fromPy_onManipulatorReady() { // called on pygame load
         console.log('fromPy_onManipulatorReady');
         _isManipulatorReady = true;
 
-        // Handle hash params
+        // Handle url hash params
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const wsParam = hashParams.get("workspace");
         if (wsParam) {
             const ws = decodeURIComponent(wsParam);
-            if (ws.length < 100) { // workspace name, !!! hacky
+            if (ws.length < 50) { // workspace name, !!! hacky
                 loadWorkspace(ws);
             } else {
-                const xml = atob(ws); // decode from base64
-                loadWorkspaceXml(xml);
+                decodeAndDecompress(ws) // decode from base64 and decompress
+                    .then(xml => {
+                        loadWorkspaceXml(xml);
+                    });
             }
         }
     }

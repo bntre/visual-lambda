@@ -2,7 +2,7 @@
 @rem       https://pygame-web.github.io/wiki/publishing/itch.io/
 
 
-set DEST=visual-lambda-2.2.1
+set DEST=visual-lambda-2.3
 @rem  It will be also the name of .apk file
 
 
@@ -13,7 +13,11 @@ mkdir %DEST%
 xcopy *.py                              %DEST%\
 xcopy config.cfg                        %DEST%\
 xcopy library.txt                       %DEST%\
-xcopy res\*                             %DEST%\res\
+
+xcopy res\toolbar_icons.png             %DEST%\res\
+xcopy res\OpenSans-Regular.ttf          %DEST%\res\
+xcopy res\OFL.txt                       %DEST%\res\
+
 xcopy workspaces\default_workspace.xml  %DEST%\workspaces\
 xcopy workspaces\clear.xml              %DEST%\workspaces\
 xcopy workspaces\library_demo.xml       %DEST%\workspaces\

@@ -848,6 +848,10 @@ class Manipulator( Window ):
             item.refreshTransform()
             
             self.items.insert( 0, item )
+
+            self.selection = Selection( item )
+            self.selectionChanged = True
+
             self.invalidate()
 
     
@@ -974,6 +978,10 @@ class Manipulator( Window ):
         fig.refreshTransform()
         
         self.items.insert( 0, fig )
+
+        self.selection = Selection( fig )
+        self.selectionChanged = True
+
         self.invalidate()
 
 
@@ -1002,6 +1010,8 @@ class Manipulator( Window ):
             if saving.load_from_file( self, "clear.xml" ):
                 self.invalidate()
         
+        #!!! move localstorage exchange to .html ? (via requestWorkspaceXml, loadWorkspaceXml)
+
         def fromJs_saveWorkspace( self, workspaceName ):
             if not workspaceName: return
             xmlData = saving.save( self, pretty = True )
