@@ -547,9 +547,10 @@ frameborder="1"
     // === Don't propagate some events to pygame
     window.addEventListener('keydown', (e) => {
         const intercept = (
-            e.key === 'Escape' ||
-            e.key === 'F1' || e.key === 'F11' || e.key === 'F12' ||
-            (e.shiftKey && e.key === 'F5')  // Allow to reload the page
+            e.key === 'Escape'
+            || e.key === 'F1' || e.key === 'F11' || e.key === 'F12'
+            || (e.shiftKey && e.key === 'F5')  // Allow to reload the page
+            || (e.ctrlKey && e.key === 'F5')
         );
         if (intercept) {
             e.stopPropagation();

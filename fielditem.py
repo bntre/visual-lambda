@@ -65,7 +65,7 @@ class RectItem( FieldItem ):
         self.refreshTransform()
 
         self.size = size  # tuple
-        self.color = color  # str
+        self.color: str = color
 
     def copy( self ):
         copy = RectItem( self.size, self.color )

@@ -31,7 +31,7 @@ def save( manipulator, pretty = False ):
         item = doc.createElement('item')
 
         pos = i.position * Vector((0,0,1,1))
-        item.setAttribute( 'pos', '%.2f,%.2f' % (pos[0],pos[1]) )
+        item.setAttribute( 'pos', '%s,%s' % (format(pos[0]), format(pos[1])) )
         
         if isinstance( i, Figure ):
             refnames.reset()
@@ -39,6 +39,10 @@ def save( manipulator, pretty = False ):
         
         elif isinstance( i, TextItem ):
             item.setAttribute( 'text', i.text )
+
+        elif isinstance( i, RectItem ):
+            item.setAttribute( 'rect', '%s,%s' % (format(i.size[0]), format(i.size[1])) )
+            item.setAttribute( 'color', i.color )
 
         items.appendChild( item )
 
@@ -48,6 +52,8 @@ def save( manipulator, pretty = False ):
         return doc.toxml()
 
 
+def format(x):
+    return f"{round(x, 2):g}"
 
 def to_tuple(attr):
     p = attr.split(',')

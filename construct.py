@@ -14,7 +14,7 @@ def hasParent( node: Node ):
     return p and p.type is not None  # skip fake parent (see made in withRoot)
 
 
-def applicate( dropped, node ):
+def applicate( dropped, node: Node ):
     debug('con','dropped',dropped,'-->',node)
 
     #appl = let.Application( func= func, arg= node )

@@ -23,10 +23,6 @@
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a b c. b" />
 
-  <item pos="0,-10" figure="(\g. (\f. f (f f f f) (f f G f)) g g) X" origin="1" />
-                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
-                                                            <item pos="30,0" figure="\a b c. b" />
-
   <item pos="0,-10" figure="X (\f. f G)" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a. a I" />
@@ -34,6 +30,14 @@
   <item pos="0,-10" figure="X (\f g. f (g f f f) (g f f G) (g f f f))" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a. a (\b c d. c) (\e f g. g)" />
+
+  <item pos="0,-10" figure="(\g. (\f. f (f f f f) (f f G f)) g g) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a b c. b" />
+
+  <item pos="0,-10" figure="(\a. a a (\b. b G)) X" origin="1" />
+                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
+                                                            <item pos="30,0" figure="\a b. b I" />
 
   <item pos="0,-10" figure="X (\a b c d e f. d G)" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
@@ -46,10 +50,6 @@
   <item pos="0,-10" figure="X (\f. f (\g. g g G) f)" origin="1" />
                                                             <item pos="25,4.9" rect="10,10" color="#EEEEEE" />
                                                             <item pos="30,0" figure="\a. a (\b c. b F)" />
-
-  <item pos="0,-10" figure="(\a. a a (\b. b G)) X" origin="1" />
-                                                            <item pos="26,4" rect="8,8" color="#EEEEEE" />
-                                                            <item pos="30,0" figure="\a b. b I" />
 
   <item pos="0,-10" figure="(\a. a (\b. a (b G))) X" origin="1" />
                                                             <item pos="26,4" rect="8,8" color="#EEEEEE" />
