@@ -24,7 +24,7 @@ class Parser:
     chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'"
 
     # Delimiters (single-char Tokens)
-    dels  = "\\/.():,+*="
+    dels  = "\\/.():,+*=λ"
     
 
     def __init__( self ):
@@ -33,7 +33,7 @@ class Parser:
         self.lib.init()             # parser.lib reference must exist before initialization of Library
 
     
-    def parse( self, str ):
+    def parse( self, str ) -> Expression:
 
         #print(list( self.tokenize( str ) ))
         tokens = self.tokenize( str )
@@ -43,7 +43,7 @@ class Parser:
         return self.getExpression( struct, {} )
 
    
-    def getExpression( self, struct, vars, func=None ):
+    def getExpression( self, struct, vars, func=None ) -> Expression:
         
         if not struct:
             print("Error: Empty Expression: ()")
@@ -153,7 +153,7 @@ class Parser:
 
         for t in tokens:
         
-            if '/' == t or '\\' == t:               # Lambda of Abstraction
+            if '/' == t or '\\' == t or 'λ' == t:   # Lambda of Abstraction
                 type = LAMBDA
 
             elif '.' == t:                          # Body of Abstraction
@@ -213,6 +213,6 @@ class Parser:
 
 parser = Parser()
 
-def parse( str ):
+def parse( str ) -> Expression:
     return parser.parse( str )
     

@@ -390,8 +390,8 @@ class Manipulator( Window ):
         if not self.selection:
             sel = None
         else:
-            sel = self.selected( figure, drawn.noke, self.selection )
-        stroke = { None:None, True:(0xFF,0x00,0x00), False:(0xFF,0x77,0x00) }[ sel ]
+            sel = self.selected( figure, drawn.noke, self.selection, checkAbs= True )
+        stroke = { None:None, True:(0xFF,0x00,0x00), False:(0xFF,0x77,0x00), 2:(0xFF,0x77,0x00) }[ sel ]
         if not sel:
             if self.highlight and self.selected( figure, drawn.noke, self.highlight ):
                 stroke = (0xAA,0x00,0x00)
@@ -1119,10 +1119,10 @@ class Manipulator( Window ):
                     
            
         
-    def selected( self, figure, noke, selection ):
+    def selected( self, figure, noke: Noke, selection: Selection, checkAbs= False ):
         """
-        Returns True | False | None:
-        selected | same Node | Not selected
+        Returns True | False | None | 2:
+        selected | same Node | Not selected | Abs-Var
         """
         
         if figure == selection.figure():
@@ -1137,7 +1137,14 @@ class Manipulator( Window ):
             if sel.node == noke.node:
                 return sel.key == noke.key
         
-        
+            # To highlight Abs-Var binding
+            if checkAbs:
+                if let.ABS == sel.node.type and let.VAR == noke.node.type:
+                    if noke.node.ref == sel.node:
+                        return 2
+                if let.VAR == sel.node.type and let.ABS == noke.node.type:
+                    if sel.node.ref == noke.node:
+                        return 2
 
     
     def mouseOver( self, pos ):
