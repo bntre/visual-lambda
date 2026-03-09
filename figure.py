@@ -732,7 +732,7 @@ class Figure( FieldItem ):
 
 
 
-    def pick( self, matrix, cursor, noke= None ):
+    def pick( self, matrix: TransformMatrix, cursor: Vector2, noke= None ):
         
         noke = noke and noke.through()  or  self.root().through()
         

@@ -170,6 +170,13 @@ class Manipulator( Window ):
         self.pinchDistAccum = 0.0           # don't call zoom each pinch
         self.pinchStepPx = 12.0             # sensitivity
 
+        # Touchscreen: tap to reref
+        self.touchTapStart = {}             # finger_id -> Vector2(px, py)
+        self.touchTapMoved = set()          # finger_id with moved finger
+        self.touchTapMaxMovePx = 18.0       # movement threshold for tap
+
+        self.debugLine: str = None
+
         self.mode = let.Mode()              # Mode of reduction
         
         self.quick = False                  # Quick Reduction
@@ -568,7 +575,7 @@ class Manipulator( Window ):
         
 
     
-    def defaultView( self, size, scale= None ):
+    def defaultView( self, size, scale= None ) -> TransformMatrix:
     
         cx = size[0] * 0.5
         cy = size[1] * 0.5
@@ -621,6 +628,10 @@ class Manipulator( Window ):
         # Collect selection status lines
         lines = []
         
+        # Print debug info
+        if self.debugLine:
+            lines.append( self.debugLine )
+
         s = self.selection
         if s.figure():
             node = s.noke.node              # Selection
@@ -665,6 +676,7 @@ class Manipulator( Window ):
             t.draw( surface, self.size )
         
         # Update Statusbar
+        #if self.selectionChanged or self.debugLine:
         if self.selectionChanged:
             self.selectionChanged = False
             self.updateSelectionStatus()
@@ -679,7 +691,7 @@ class Manipulator( Window ):
         #print('handleEvent', event)
 
         if event.type in ( MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION ):
-            
+
             pos = Vector2( event.pos )
             
             if MOUSEBUTTONDOWN == event.type:
@@ -692,7 +704,13 @@ class Manipulator( Window ):
                     if self.items:          # Don't zoom if no Figures
                         self.zoomView( pos, event.button == 4 )
                 
-                elif event.button == 1 and not modCtrl:  # Left Button (without Ctrl)
+                if (event.button == 3 or                # Right Button or
+                    event.button == 1 and (modCtrl or event.touch)):   # Left Button with Ctrl or touchscreen
+                    if self.selection.figure():         # Try to Reref Selected Var or Abs
+                        if self.rerefByPos( pos ):
+                            self.invalidate()
+
+                if event.button == 1 and not modCtrl:  # Left Button (without Ctrl)
 
                     # Toolbars
                     item = self.pickToolbarItem( pos )
@@ -710,22 +728,6 @@ class Manipulator( Window ):
                     if not self.selection:
                         self.viewMovePos = pos
                 
-                elif event.button == 3 or event.button == 1 and modCtrl:   # Right Button or Left Button with Ctrl
-                    if self.selection.figure():  # Try to Reref Selected Var or Abs
-                        pick = self.pick( pos, figuresOnly= True )
-                        if pick and pick.item == self.selection.item:
-                            figure = pick.item
-                            sel  = self.selection.noke.node
-                            pick = pick.noke.node
-                            # Try to reref
-                            reref = False
-                            if let.ABS == sel.type and let.VAR == pick.type:
-                                reref = construct.reref( pick, sel )
-                            elif let.VAR == sel.type and let.ABS == pick.type:
-                                reref = construct.reref( sel, pick )
-                            if reref:
-                                figure.history.step( figure.expression.copy() )
-                                self.invalidate()
                 
 
             if MOUSEBUTTONUP == event.type: # End Drag
@@ -807,8 +809,7 @@ class Manipulator( Window ):
                 self.activeFingers.pop(event.finger_id, None)
 
             if len(self.activeFingers) == 2:
-                pts = list(self.activeFingers.values())
-                p1, p2 = pts[0], pts[1]
+                p1, p2 = tuple(self.activeFingers.values())
                 center = (p1 + p2) * 0.5
                 dist = (p1 - p2).length()
 
@@ -1124,23 +1125,11 @@ class Manipulator( Window ):
 
 
 
-    def pick( self, pos, figuresOnly= False ):
+    def pick( self, pos: Vector2, figuresOnly= False ) -> Selection:
 
         for item in self.items:
             
-            if isinstance( item, TextItem ):
-                if not figuresOnly:
-                    matrix = self.viewMatrix * item.transform
-                    if item.pick( self.font, matrix, pos ):
-                        return Selection( item )
-
-            elif isinstance( item, RectItem ):
-                if not figuresOnly:
-                    matrix = self.viewMatrix * item.transform
-                    if item.pick( matrix, pos ):
-                        return Selection( item )
-            
-            elif isinstance( item, Figure ):
+            if isinstance( item, Figure ):
                 
                 # Do not pick dragged Figure or Figure at Eating
                 if item.eating  or  \
@@ -1151,7 +1140,18 @@ class Manipulator( Window ):
                 noke = last( item.pick( matrix, pos ) )   # Last picked (top level) Expression
                 if noke:
                     return Selection( item, noke )
-                    
+            
+            elif not figuresOnly:
+                
+                if isinstance( item, TextItem ):
+                    matrix = self.viewMatrix * item.transform
+                    if item.pick( self.font, matrix, pos ):
+                        return Selection( item )
+
+                elif isinstance( item, RectItem ):
+                    matrix = self.viewMatrix * item.transform
+                    if item.pick( matrix, pos ):
+                        return Selection( item )
            
         
     def selected( self, figure, noke: Noke, selection: Selection, checkAbs= False ):
@@ -1313,6 +1313,22 @@ class Manipulator( Window ):
             self.nonstop = False
             
 
+    def rerefByPos( self, pos: Vector2 ) -> bool:
+        pick = self.pick( pos, figuresOnly= True )
+        if pick and pick.item == self.selection.item:
+            figure = pick.item
+            sel  = self.selection.noke.node
+            pick = pick.noke.node
+            # Try to reref
+            reref = False
+            if let.ABS == sel.type and let.VAR == pick.type:
+                reref = construct.reref( pick, sel )
+            elif let.VAR == sel.type and let.ABS == pick.type:
+                reref = construct.reref( sel, pick )
+            if reref:
+                figure.history.step( figure.expression.copy() )
+                return True
+        return False
 
 
     def afterEating( self, figure ):

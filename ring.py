@@ -30,7 +30,7 @@ class Ring:
         return copy.deepcopy( self )
         
         
-    def pick( self, pos ):
+    def pick( self, pos: Vector2 ) -> bool:
         "Is Point pos inside Ring?"
         p = Vector2( self.pos, pos )
         d2 = p.dot( p )

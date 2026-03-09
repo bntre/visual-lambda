@@ -45,7 +45,7 @@ class TextItem( FieldItem ):
         self.transform = self.position
 
 
-    def pick( self, font, matrix, pos ):
+    def pick( self, font, matrix: TransformMatrix, pos: Vector2 ):
         
         x,y,_,_ = matrix * Vector((0,0,1,1))
         

@@ -3,7 +3,7 @@ Visual Lambda environment mouse/keyboard controls
 
 
 View
-    Zoom                                Mouse Wheel, +/-
+    Zoom                                Mouse Wheel, +/-, Pinch
     Move                                Left mouse button, Arrow buttons
     Refresh (colors and names)          F5
 
@@ -32,7 +32,7 @@ Construction of lambda terms
         Insert lambda                   L, W
         Delete                          Del
         Bind Variable/Lambda with 
-          selected Lambda/Variable      Ctrl+LClick or RClick
+          selected Lambda/Variable      Ctrl+LClick or RClick or Tap
     
         Expand selection                Space
     
