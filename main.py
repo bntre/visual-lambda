@@ -164,6 +164,11 @@ class Manipulator( Window ):
         self.highlight = Selection( None )  # Dragging Figure over another Figure
         self.dragPos   = None               # Start position of dragging an Item
 
+        # Touchscreen: pinch to zoom
+        self.activeFingers = {}             # finger_id -> Vector2(px, py)
+        self.pinchPrevDist = None
+        self.pinchDistAccum = 0.0           # don't call zoom each pinch
+        self.pinchStepPx = 12.0             # sensitivity
 
         self.mode = let.Mode()              # Mode of reduction
         
@@ -577,12 +582,12 @@ class Manipulator( Window ):
         return t * r
 
     
-    def zoomView( self, pos, zoomIn = True ):
+    def zoomView( self, pos, zoomIn: bool, zoomK: float = 1.11 ):
         
         t = TransformMatrix()
         t.setTranspose( pos.x, pos.y, 1 )
         
-        k = 1.11 ** ( zoomIn and 1 or -1 )
+        k = zoomK ** ( zoomIn and 1 or -1 )
         z = TransformMatrix()
         z.setTranspose( 0,0, k )
         
@@ -591,7 +596,6 @@ class Manipulator( Window ):
 
     def zoomInView ( self ): self.zoomView( Vector2(self.size) / 2, True )
     def zoomOutView( self ): self.zoomView( Vector2(self.size) / 2, False )
-
 
     def moveView( self, shiftX, shiftY ):
         
@@ -793,6 +797,37 @@ class Manipulator( Window ):
                 if redraw:
                     self.invalidate()
     
+
+        elif event.type in (FINGERDOWN, FINGERMOTION, FINGERUP):
+            # pygame finger coords are normalized [0..1], convert to pixels
+            if event.type != FINGERUP:
+                p = Vector2((event.x * self.size[0], event.y * self.size[1]))
+                self.activeFingers[event.finger_id] = p
+            else:
+                self.activeFingers.pop(event.finger_id, None)
+
+            if len(self.activeFingers) == 2:
+                pts = list(self.activeFingers.values())
+                p1, p2 = pts[0], pts[1]
+                center = (p1 + p2) * 0.5
+                dist = (p1 - p2).length()
+
+                if self.pinchPrevDist is not None and self.items:
+                    self.pinchDistAccum += (dist - self.pinchPrevDist)
+
+                    while abs(self.pinchDistAccum) >= self.pinchStepPx:
+                        zoom_in = self.pinchDistAccum > 0
+                        self.zoomView(center, zoom_in)
+                        self.pinchDistAccum += -self.pinchStepPx if zoom_in else self.pinchStepPx
+
+                self.pinchPrevDist = dist
+
+                # avoid conflict with one-finger drag logic while pinching
+                self.viewMovePos = None
+                self.dragPos = None
+            else:
+                self.pinchPrevDist = None
+                self.pinchDistAccum = 0.0
 
 
         elif KEYDOWN == event.type:
